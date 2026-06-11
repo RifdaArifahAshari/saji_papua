@@ -50,9 +50,9 @@ st.markdown("Uji pengetahuanmu mengenai adat istiadat, tarian, pakaian, makanan,
 # --- INTRO STATE ---
 if st.session_state.quiz_state == "intro":
     st.markdown("""
-        <div class="custom-card" style="padding: 30px; border-color: #e5a93c;">
-            <h3 style="color: #e5a93c; text-align: center; margin-bottom: 20px;">Selamat Datang di Arena Kuis Etnik Papua!</h3>
-            <p style="text-align: center; color: #9ca3af; font-size: 1.1rem; line-height: 1.6;">
+        <div class="custom-card" style="padding: 30px; border-color: #c67f07;">
+            <h3 style="color: #c67f07; text-align: center; margin-bottom: 20px;">Selamat Datang di Arena Kuis Etnik Papua!</h3>
+            <p style="text-align: center; color: #787d85; font-size: 1.1rem; line-height: 1.6;">
                 Selesaikan 5 level tantangan kebudayaan. Setiap level memiliki 5 pertanyaan pilihan ganda.<br>
                 Semakin tinggi level, semakin besar poin yang bisa Anda dapatkan!
             </p>
@@ -68,11 +68,11 @@ if st.session_state.quiz_state == "intro":
             completed_str = "✅ Selesai" if lvl in st.session_state.level_scores else "🔒 Belum dikerjakan"
             score_str = f"Poin: {st.session_state.level_scores[lvl]}" if lvl in st.session_state.level_scores else f"Max Poin: {pts}"
             st.markdown(f"""
-                <div class="custom-card" style="text-align: center; padding: 16px; min-height: 200px; border-color: rgba(229,169,60,0.3);">
+                <div class="custom-card" style="text-align: center; padding: 16px; min-height: 200px; border-color: rgba(198,127,7,0.18);">
                     <div style="font-size: 1.8rem; margin-bottom: 8px;">Level {lvl}</div>
-                    <div style="font-size: 0.85rem; font-weight: 600; color: #e5a93c; margin-bottom: 8px;">{title}</div>
-                    <div style="font-size: 0.8rem; color: #9ca3af; margin-bottom: 8px;">{score_str}</div>
-                    <div style="font-size: 0.75rem; color: #c84b31; font-weight: 700;">{completed_str}</div>
+                    <div style="font-size: 0.85rem; font-weight: 600; color: #c67f07; margin-bottom: 8px;">{title}</div>
+                    <div style="font-size: 0.8rem; color: #787d85; margin-bottom: 8px;">{score_str}</div>
+                    <div style="font-size: 0.75rem; color: #b0371e; font-weight: 700;">{completed_str}</div>
                 </div>
             """, unsafe_allow_html=True)
             
@@ -127,13 +127,13 @@ elif st.session_state.quiz_state == "playing":
             
         with col_q:
             st.markdown(f"""
-                <div class="custom-card" style="border-color: rgba(229,169,60,0.3); margin-bottom: 15px;">
-                    <p style="font-size: 1.1rem; font-weight: 600; line-height: 1.5; color: #ffffff; margin: 0;">{q['question']}</p>
+                <div class="custom-card" style="border-color: rgba(198,127,7,0.18); margin-bottom: 15px;">
+                    <p style="font-size: 1.1rem; font-weight: 600; line-height: 1.5; color: #1e2025; margin: 0;">{q['question']}</p>
                 </div>
             """, unsafe_allow_html=True)
             
             # Answer selections using radio / buttons
-            selected_option = st.radio("Pilih jawaban yang benar:", q["options"], index=None, key=f"q_radio_{q['id']}")
+            selected_option = st.radio("Pilih jawaban yang benar:", q["options"], index=None, key=f"q_radio_{level}_{q_idx}")
             
             st.write("")
             
@@ -180,7 +180,7 @@ elif st.session_state.quiz_state == "check_answer":
             
         st.markdown(f"""
             <div class="custom-card" style="border-color: rgba(229,169,60,0.15);">
-                <strong>Kunci Jawaban</strong>: <span style="color: #e5a93c;">{correct_ans}</span><br><br>
+                <strong>Kunci Jawaban</strong>: <span style="color: #c67f07;">{correct_ans}</span><br><br>
                 <strong>Penjelasan</strong>:<br>{q['explanation']}
             </div>
         """, unsafe_allow_html=True)
@@ -217,16 +217,16 @@ elif st.session_state.quiz_state == "level_done":
     st.markdown(f"### 🎉 Level {level} Selesai!")
     
     st.markdown(f"""
-        <div class="custom-card" style="text-align: center; border-color: #e5a93c; padding: 40px 20px;">
+        <div class="custom-card" style="text-align: center; border-color: #c67f07; padding: 40px 20px;">
             <div style="font-size: 4rem; margin-bottom: 10px;">🏆</div>
-            <h3 style="color: #e5a93c; margin-bottom: 10px;">Apresiasi Hasil Kerja Keras Anda!</h3>
-            <p style="font-size: 1.3rem; color: #ffffff; margin-bottom: 20px;">
+            <h3 style="color: #c67f07; margin-bottom: 10px;">Apresiasi Hasil Kerja Keras Anda!</h3>
+            <p style="font-size: 1.3rem; color: #1e2025; margin-bottom: 20px;">
                 Anda menjawab benar <strong>{correct} dari 5 soal</strong>.
             </p>
-            <div style="display: inline-block; padding: 12px 30px; background: rgba(229, 169, 60, 0.1); border: 2px solid #e5a93c; border-radius: 12px; font-size: 1.5rem; font-weight: 700; color: #f5d082; margin-bottom: 20px;">
+            <div style="display: inline-block; padding: 12px 30px; background: rgba(198, 127, 7, 0.05); border: 2px solid #c67f07; border-radius: 12px; font-size: 1.5rem; font-weight: 700; color: #965b02; margin-bottom: 20px;">
                 Poin Diperoleh: +{score} / {max_pts}
             </div>
-            <p style="color: #9ca3af; max-width: 600px; margin: 0 auto; line-height: 1.6;">
+            <p style="color: #787d85; max-width: 600px; margin: 0 auto; line-height: 1.6;">
                 Terima kasih telah berpartisipasi menjaga warisan tradisi Papua. Pengetahuan Anda sangat berharga bagi pelestarian ini.
             </p>
         </div>
@@ -259,16 +259,16 @@ elif st.session_state.quiz_state == "game_done":
     max_total = sum(LEVEL_POINTS.values())
     
     st.markdown(f"""
-        <div class="custom-card" style="text-align: center; border-color: #c84b31; padding: 40px 20px;">
+        <div class="custom-card" style="text-align: center; border-color: #b0371e; padding: 40px 20px;">
             <div style="font-size: 5rem; margin-bottom: 10px;">🏅</div>
-            <h2 style="color: #e5a93c; margin-bottom: 10px;">Gelar: Penjaga Agung Budaya Papua</h2>
-            <p style="font-size: 1.2rem; color: #9ca3af; margin-bottom: 20px;">
+            <h2 style="color: #c67f07; margin-bottom: 10px;">Gelar: Penjaga Agung Budaya Papua</h2>
+            <p style="font-size: 1.2rem; color: #787d85; margin-bottom: 20px;">
                 Anda telah menyelesaikan seluruh 5 level kuis kebudayaan Papua.
             </p>
-            <div style="font-size: 2.2rem; font-weight: 900; color: #c84b31; text-shadow: 0 0 15px rgba(200,75,49,0.3); margin-bottom: 20px;">
+            <div style="font-size: 2.2rem; font-weight: 900; color: #b0371e; text-shadow: 0 0 15px rgba(200,75,49,0.3); margin-bottom: 20px;">
                 Total Skor: {total_earned} / {max_total} Poin
             </div>
-            <p style="color: #f3f4f6; max-width: 600px; margin: 0 auto 20px; line-height: 1.6;">
+            <p style="color: #1e2025; max-width: 600px; margin: 0 auto 20px; line-height: 1.6;">
                 Pengetahuan Anda tentang Suku Asmat, Dani, Amungme, Kamoro, Biak, dan Sentani sangat luar biasa! 
                 Anda kini resmi dinobatkan sebagai <strong>Duta Digital Pelestarian Papua 2026</strong>.
             </p>
@@ -284,7 +284,7 @@ elif st.session_state.quiz_state == "game_done":
             st.markdown(f"""
                 <div class="custom-card" style="text-align: center; padding: 12px; border-color: rgba(229,169,60,0.15);">
                     <strong>Level {lvl}</strong><br>
-                    <span style="color: #e5a93c; font-size: 1.2rem; font-weight: 700;">{pts}/{max_pts}</span>
+                    <span style="color: #c67f07; font-size: 1.2rem; font-weight: 700;">{pts}/{max_pts}</span>
                 </div>
             """, unsafe_allow_html=True)
             

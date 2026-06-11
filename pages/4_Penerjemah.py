@@ -101,7 +101,7 @@ if btn_start or selected_preset:
             
             # Construct a small visualization log
             status_text.markdown(f"""
-                <div class="custom-card" style="border-left: 5px solid {'#e5a93c' if step['status'] != 'error' else '#c84b31'};">
+                <div class="custom-card" style="border-left: 5px solid {'#c67f07' if step['status'] != 'error' else '#b0371e'};">
                     <strong>Langkah ke-{step['step']}</strong>: Memproses token <strong>'{step['token']}'</strong> ({step['type']})<br>
                     <strong>FSA State</strong>: {step['prev_state'].upper()} ➔ {step['curr_state'].upper()}<br>
                     <strong>PDA Stack</strong>: [ {stack_visual} ]<br><br>
@@ -136,7 +136,7 @@ if btn_start or selected_preset:
             st.markdown(f"""
                 <div class="success-alert" style="background-color: rgba(76, 175, 80, 0.1); border-color: #4CAF50; color: #81C784; padding: 24px;">
                     <h4 style="color: #81C784; margin-top: 0;">🎉 KALIMAT VALID!</h4>
-                    <p style="font-size: 1.1rem; color: #ffffff; margin-bottom: 0;">
+                    <p style="font-size: 1.1rem; color: #1e2025; margin-bottom: 0;">
                         {translation_text}
                     </p>
                 </div>
@@ -146,7 +146,7 @@ if btn_start or selected_preset:
             st.markdown(f"""
                 <div class="success-alert" style="background-color: rgba(244, 67, 54, 0.1); border-color: #f44336; color: #e57373; padding: 24px;">
                     <h4 style="color: #e57373; margin-top: 0;">❌ STRUKTUR TIDAK VALID</h4>
-                    <p style="color: #ffffff; margin-bottom: 10px;">
+                    <p style="color: #1e2025; margin-bottom: 10px;">
                         Kalimat ditolak oleh sistem otomata Tobati.
                     </p>
                     <p style="font-size: 0.95rem; color: #ffcdd2; margin-bottom: 0; line-height: 1.5;">

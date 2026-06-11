@@ -2,135 +2,211 @@
 """
 Backend logic for Indonesian to Tobati translator.
 Uses FSA (Finite State Automata) and PDA (Pushdown Automata) simulations for validation
-and translation mapping.
+and translation mapping, specifically designed for SOV/OSV patterns.
 """
 
 import re
 
-# Vocabulary Dictionary based on Tobati lexicon
-VOCAB_TOBATI = {
-    # Pronouns
-    "saya": "Nyak",
-    "kamu": "Rau",
-    "dia": "Nye",
-    "kita": "Mewt",
-    "mereka": "Dong",
-    "itu": "Nye",
-    "ini": "Re",
-    
-    # Nouns
-    "rumah": "Rumsram", # or Rum
-    "air": "Fuar",
-    "ikan": "Ican",
-    "perahu": "Wai",
-    "hutan": "Wan",
-    "api": "For",
-    "batu": "Carcw",
-    "pohon": "Yom",
-    "makanan": "Nggar",
-    
-    # Verbs
-    "makan": "An",
-    "minum": "Nung",
-    "tidur": "En",
-    "pergi": "Rau",
-    "pulang": "Wai",
-    "melihat": "Onyo",
-    "duduk": "Minyo",
-    "berjalan": "Rau",
-    "membawa": "Nto",
-    
-    # Adjectives
-    "besar": "Beba",
-    "kecil": "Man",
-    "baik": "Awor",
-    "buruk": "Bruk",
-    "cepat": "Truf",
-    "jauh": "Awok",
-    "dekat": "Ram",
-    
-    # Greetings
-    "halo": "Koi",
-    "selamat": "Selamat",
-    "pagi": "Bwar",
-    "siang": "Syor",
-    "sore": "Mandos",
-    "malam": "Numbur",
-    "terima kasih": "Kuru-kuru"
+# Lexicon & Grammar Rules (Mirrors penerjemah.html)
+LEXICON = {
+    "subjects": {
+        "aka": {"id": "S", "indo": "Saya", "type": "Subjek"},
+        "iri": {"id": "S", "indo": "Kamu", "type": "Subjek"},
+        "ado": {"id": "S", "indo": "Dia", "type": "Subjek"}
+    },
+    "objects": {
+        "kai": {"id": "O", "indo": "ikan", "type": "Objek"},
+        "ham": {"id": "O", "indo": "sagu", "type": "Objek"},
+        "te":  {"id": "O", "indo": "air", "type": "Objek"}
+    },
+    "verbs": {
+        "aibi":      {"id": "V", "indo": "menangkap", "type": "Verba"},
+        "apri":      {"id": "V", "indo": "makan", "type": "Verba"},
+        "ane":       {"id": "V", "indo": "minum", "type": "Verba"},
+        "natnahat":  {"id": "V", "indo": "mengajar", "type": "Verba"}
+    }
 }
 
-# Reverse mapping for Tobati to Indonesian
-VOCAB_INDONESIA = {v.lower(): k for k, v in VOCAB_TOBATI.items()}
+PRESETS_VALID = {
+    "aka kai aibi": "Saya menangkap ikan",
+    "kai aka aibi": "Ikan saya menangkap (Objek dimedepankan)",
+    "iri ham apri": "Kamu makan sagu",
+    "ado te ane": "Dia minum air"
+}
 
-def clean_text(text):
-    return re.sub(r'[^a-zA-Z\\s]', '', text).lower().strip()
+PRESETS_INVALID = {
+    "aka aibi kai": "Pola salah (SVO tidak didukung)",
+    "ham apri": "Kehilangan Subjek",
+    "aka kai": "Kehilangan Verba",
+    "iri kai ane": "Terdapat kata lebih / urutan salah"
+}
 
-def fsa_validate(words):
+def get_word_info(token):
+    if token in LEXICON["subjects"]:
+        return LEXICON["subjects"][token]
+    elif token in LEXICON["objects"]:
+        return LEXICON["objects"][token]
+    elif token in LEXICON["verbs"]:
+        return LEXICON["verbs"][token]
+    return None
+
+def validate_and_translate(sentence):
     """
-    Finite State Automata to validate simple Subject-Predicate-Object (S-P-O) structure.
-    Returns True if structurally acceptable for Tobati basic grammar.
-    (Simplified simulation)
+    Simulates the FSA and PDA logic from penerjemah.html.
+    Returns: (is_valid, steps, translation_text, error_msg)
     """
-    if not words: return False
+    raw_text = sentence.strip().lower()
+    if not raw_text:
+        return False, [], "", "Kalimat kosong!"
+        
+    tokens = raw_text.split()
     
-    # States: q0 (start), q1 (Subject found), q2 (Verb/Predicate found), q3 (Object found)
-    state = "q0"
+    current_state = "q0"
+    stack = ["Z0"]
     
-    # Very basic tagging
-    subjects = ["saya", "kamu", "dia", "kita", "mereka", "itu", "ini"]
-    verbs = ["makan", "minum", "tidur", "pergi", "pulang", "melihat", "duduk", "berjalan", "membawa"]
+    subjekWord = ""
+    objekWord = ""
+    verbaWord = ""
+    isGrammarValid = True
     
-    for word in words:
-        if state == "q0" and word in subjects:
-            state = "q1"
-        elif state in ["q0", "q1"] and word in verbs:
-            state = "q2"
-        elif state == "q2":
-            state = "q3" # Object or adverb
+    steps = []
+    
+    for i, token in enumerate(tokens):
+        word_info = get_word_info(token)
+        
+        step_data = {
+            "step": i + 1,
+            "token": token,
+            "type": "Tidak dikenali",
+            "prev_state": current_state,
+            "curr_state": current_state,
+            "stack": list(stack),
+            "status": "info",
+            "desc": ""
+        }
+        
+        if not word_info:
+            step_data["status"] = "error"
+            step_data["desc"] = f"Kata '{token}' tidak ada dalam kamus Tobati!"
+            step_data["curr_state"] = "q_err"
+            steps.append(step_data)
+            isGrammarValid = False
+            current_state = "q_err"
+            continue
             
-    # Valid if it reached a verb (q2) or object (q3), or it's a simple greeting.
-    if state in ["q2", "q3"]: return True
-    if len(words) <= 2: return True # Accept simple phrases
-    return False
-
-def pda_translate_indo_to_tobati(sentence):
-    """
-    Pushdown Automata simulation for translating Indo to Tobati.
-    Handles subject + verb + object order mapping.
-    Tobati often uses S-O-V or S-V-O depending on construct, we stick to direct mapped S-V-O here for simplicity.
-    """
-    words = clean_text(sentence).split()
-    if not fsa_validate(words):
-        pass # We'll still try to translate word by word if FSA fails
+        tokenType = word_info["id"]
+        step_data["type"] = word_info["type"]
         
-    stack = []
-    translated_words = []
+        if tokenType == "S": subjekWord = token
+        elif tokenType == "O": objekWord = token
+        elif tokenType == "V": verbaWord = token
+        
+        # FSA Transition Logic
+        previous_state = current_state
+        transitionLabel = ""
+        
+        if isGrammarValid:
+            if current_state == "q0":
+                if tokenType == "S":
+                    current_state = "q1"
+                    transitionLabel = "Membaca Subjek di awal kalimat."
+                elif tokenType == "O":
+                    current_state = "q2"
+                    transitionLabel = "Membaca Objek di awal kalimat."
+                else:
+                    current_state = "q_err"
+                    isGrammarValid = False
+                    transitionLabel = "Membaca Verba di awal (Pola tidak valid)."
+            elif current_state == "q1":
+                if tokenType == "O":
+                    current_state = "q3"
+                    transitionLabel = "Membaca Objek setelah Subjek."
+                else:
+                    current_state = "q_err"
+                    isGrammarValid = False
+                    transitionLabel = "Pola salah (Harus Objek setelah Subjek)."
+            elif current_state == "q2":
+                if tokenType == "S":
+                    current_state = "q4"
+                    transitionLabel = "Membaca Subjek setelah Objek."
+                else:
+                    current_state = "q_err"
+                    isGrammarValid = False
+                    transitionLabel = "Pola salah (Harus Subjek setelah Objek)."
+            elif current_state == "q3":
+                if tokenType == "V":
+                    current_state = "q5"
+                    transitionLabel = "Membaca Verba (Pola SOV)."
+                else:
+                    current_state = "q_err"
+                    isGrammarValid = False
+                    transitionLabel = "Pola salah (Harus Verba di akhir)."
+            elif current_state == "q4":
+                if tokenType == "V":
+                    current_state = "q5"
+                    transitionLabel = "Membaca Verba (Pola OSV)."
+                else:
+                    current_state = "q_err"
+                    isGrammarValid = False
+                    transitionLabel = "Pola salah (Harus Verba di akhir)."
+            elif current_state == "q5":
+                current_state = "q_err"
+                isGrammarValid = False
+                transitionLabel = "Token berlebih setelah kalimat selesai."
+        else:
+            current_state = "q_err"
+            
+        step_data["curr_state"] = current_state
+        step_data["desc"] = f"FSA: {transitionLabel} "
+        
+        if not isGrammarValid:
+            step_data["status"] = "error"
+            step_data["desc"] += " [PDA Beku]"
+        else:
+            # PDA Logic
+            if tokenType == "S":
+                stack.append("S")
+                step_data["desc"] += "| PDA: Push 'S' ke Stack."
+            elif tokenType == "O":
+                stack.append("O")
+                step_data["desc"] += "| PDA: Push 'O' ke Stack."
+            elif tokenType == "V":
+                if current_state == "q5" and previous_state == "q3": # SOV -> Stack has [Z0, S, O]
+                    # Simulate Pop
+                    if len(stack) > 1 and stack[-1] == "O": stack.pop()
+                    if len(stack) > 1 and stack[-1] == "S": stack.pop()
+                    step_data["desc"] += "| PDA: Pop 'O' lalu 'S' dari Stack."
+                elif current_state == "q5" and previous_state == "q4": # OSV -> Stack has [Z0, O, S]
+                    if len(stack) > 1 and stack[-1] == "S": stack.pop()
+                    if len(stack) > 1 and stack[-1] == "O": stack.pop()
+                    step_data["desc"] += "| PDA: Pop 'S' lalu 'O' dari Stack."
+                    
+        step_data["stack"] = list(stack)
+        steps.append(step_data)
+        
+    isFinalAccepting = (current_state == "q5")
+    isStackClean = (len(stack) == 1 and stack[0] == "Z0")
     
-    # Push words onto stack (simulation)
-    for word in words:
-        stack.append(word)
+    if isGrammarValid and isFinalAccepting and isStackClean:
+        subIndo = LEXICON["subjects"][subjekWord]["indo"]
+        objIndo = LEXICON["objects"][objekWord]["indo"]
+        verbIndo = LEXICON["verbs"][verbaWord]["indo"]
+        pattern = "SOV" if subjekWord == tokens[0] else "OSV"
         
-    # Pop and translate (FIFO here for word order preservation)
-    for word in words:
-        # Get translation, or keep original if not found
-        trans = VOCAB_TOBATI.get(word, word)
-        # Capitalize first letter of translation
-        if trans != word:
-            trans = trans.capitalize()
-        translated_words.append(trans)
-        
-    result = " ".join(translated_words)
-    return result
-
-def pda_translate_tobati_to_indo(sentence):
-    """
-    Translates Tobati back to Indonesian.
-    """
-    words = clean_text(sentence).split()
-    translated_words = []
-    
-    for word in words:
-        trans = VOCAB_INDONESIA.get(word, word)
-        translated_words.append(trans)
-        
-    return " ".join(translated_words)
+        translation_text = f"Arti: {subIndo} {verbIndo} {objIndo} (Pola: {pattern})"
+        return True, steps, translation_text, ""
+    else:
+        suggestion = "Gunakan pola bahasa Tobati: Subjek-Objek-Verba (SOV) atau Objek-Subjek-Verba (OSV)."
+        if len(tokens) < 3:
+            suggestion = "Kalimat tidak lengkap. Minimal membutuhkan 3 kata (Subjek, Objek, dan Verba)."
+        elif current_state == "q_err" or not isGrammarValid:
+            hasS = any(t in LEXICON["subjects"] for t in tokens)
+            hasO = any(t in LEXICON["objects"] for t in tokens)
+            hasV = any(t in LEXICON["verbs"] for t in tokens)
+            
+            if not hasS: suggestion = "Kalimat Anda kehilangan Subjek."
+            elif not hasO: suggestion = "Kalimat Anda kehilangan Objek."
+            elif not hasV: suggestion = "Kalimat Anda kehilangan Verba."
+            else: suggestion = "Struktur kata tidak teratur. Pastikan kata kerja berada di akhir kalimat."
+            
+        return False, steps, "", suggestion

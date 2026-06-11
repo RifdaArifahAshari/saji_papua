@@ -29,36 +29,37 @@ def render_beranda():
                 line-height: 1.1;
                 margin-bottom: 20px;
                 font-family: 'Outfit', sans-serif;
-                background: linear-gradient(135deg, #ffffff 40%, #e5a93c 80%, #c84b31 100%);
+                background: linear-gradient(135deg, #1e2025 40%, #965b02 80%, #b0371e 100%);
                 -webkit-background-clip: text;
                 -webkit-text-fill-color: transparent;
             }
             .hero-subtitle {
                 font-size: 1.1rem;
-                color: #9ca3af;
+                color: #4a4d55;
                 margin-bottom: 30px;
                 line-height: 1.6;
             }
             .stat-num {
                 font-size: 3rem;
                 font-weight: 900;
-                color: #e5a93c;
-                text-shadow: 0 0 15px rgba(229, 169, 60, 0.25);
+                color: #c67f07;
+                text-shadow: 0 2px 10px rgba(198, 127, 7, 0.15);
                 line-height: 1;
                 margin-bottom: 6px;
             }
             .stat-num.highlight {
-                color: #c84b31;
-                text-shadow: 0 0 15px rgba(200, 75, 49, 0.3);
+                color: #b0371e;
+                text-shadow: 0 2px 10px rgba(176, 55, 30, 0.15);
             }
             .stat-lbl {
-                font-size: 1rem;
-                font-weight: 600;
-                color: #f3f4f6;
+                font-size: 1.1rem;
+                font-weight: 700;
+                color: #1e2025;
+                margin-bottom: 4px;
             }
             .stat-desc {
-                font-size: 0.8rem;
-                color: #6b7280;
+                font-size: 0.85rem;
+                color: #787d85;
             }
         </style>
     """, unsafe_allow_html=True)

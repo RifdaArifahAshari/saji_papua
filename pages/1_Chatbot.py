@@ -4,6 +4,7 @@ Streamlit page: Chatbot Budaya Papua.
 Provides interactive cultural assistance for 6 tribes in Papua.
 """
 import streamlit as st
+import re
 from backend.styles import apply_custom_styles, render_header, render_footer
 from backend.chatbot import generate_chatbot_response
 
@@ -24,10 +25,30 @@ if "messages" not in st.session_state:
         {"role": "assistant", "content": "Halo! Saya adalah Asisten Budaya Papua. Ada yang bisa saya bantu untuk mengenalkan tradisi 6 suku utama di Papua?"}
     ]
 
+def render_message_content(content, msg_idx):
+    """Parses text and renders [GALERI_BTN|filter|open] as st.button"""
+    # Split by the GALERI_BTN pattern
+    parts = re.split(r'\[GALERI_BTN\|(.*?)\|(.*?)\]', content)
+    
+    # Parts will be: [text, filter, open, text, filter, open, text]
+    for i in range(0, len(parts), 3):
+        text_part = parts[i]
+        if text_part.strip():
+            st.markdown(text_part)
+            
+        if i + 2 < len(parts):
+            filter_cat = parts[i+1]
+            open_cat = parts[i+2]
+            
+            if st.button(f"🖼️ Lihat Gambar di Galeri Budaya", key=f"galeri_btn_{msg_idx}_{i}"):
+                st.session_state["galeri_filter"] = filter_cat
+                st.session_state["galeri_open"] = open_cat
+                st.switch_page("pages/2_Galeri.py")
+
 # Render chat history
-for msg in st.session_state.messages:
+for idx, msg in enumerate(st.session_state.messages):
     with st.chat_message(msg["role"]):
-        st.markdown(msg["content"])
+        render_message_content(msg["content"], idx)
 
 # Quick response options
 st.write("---")
@@ -36,21 +57,21 @@ btn_cols = st.columns(3)
 preset_clicked = None
 
 with btn_cols[0]:
-    if st.button("🏠 Rumah Adat Suku Dani?", key="q1"):
+    if st.button("🛖 Rumah Adat Suku Dani?", key="q1"):
         preset_clicked = "Apa rumah adat Suku Dani?"
-    if st.button("💃 Tarian Suku Asmat?", key="q4"):
+    if st.button("🎭 Tarian Suku Asmat?", key="q4"):
         preset_clicked = "Tarian tradisional Suku Asmat apa saja?"
         
 with btn_cols[1]:
-    if st.button("👦 Pakaian pria Suku Biak?", key="q2"):
+    if st.button("👘 Pakaian pria Suku Biak?", key="q2"):
         preset_clicked = "Bagaimana pakaian laki-laki Suku Biak?"
     if st.button("🎵 Alat musik Suku Sentani?", key="q5"):
         preset_clicked = "Sebutkan alat musik Suku Sentani!"
 
 with btn_cols[2]:
-    if st.button("🍽️ Makanan khas Kamoro?", key="q3"):
+    if st.button("🍲 Makanan khas Kamoro?", key="q3"):
         preset_clicked = "Makanan khas Suku Kamoro apa?"
-    if st.button("📅 Upacara Suku Amungme?", key="q6"):
+    if st.button("🎉 Upacara Suku Amungme?", key="q6"):
         preset_clicked = "Apa hari besar atau upacara Suku Amungme?"
 
 # Capture user input
@@ -77,11 +98,11 @@ if user_query:
     
     # Display assistant message
     with st.chat_message("assistant"):
-        st.markdown(bot_response)
+        render_message_content(bot_response, len(st.session_state.messages))
         
         if is_fallback:
             st.warning("⚠️ Bantuan Diperlukan")
-            if st.button("👨‍💼 Hubungi Admin Manusia", key=f"admin_btn_{len(st.session_state.messages)}"):
+            if st.button("🧑‍💻 Hubungi Admin Manusia", key=f"admin_btn_{len(st.session_state.messages)}"):
                 st.success("Menghubungkan Anda ke saluran bantuan Admin... (Simulasi: Membuka jendela WhatsApp / Email)")
             
     st.session_state.messages.append({"role": "assistant", "content": bot_response})
