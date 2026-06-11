@@ -76,20 +76,14 @@ def render_beranda():
         )
         
         # Call-To-Action buttons
-        st.write("### 🧭 Mulai Penjelajahan:")
-        btn_cols = st.columns(4)
+        st.write("")
+        btn_cols = st.columns([1, 1.2, 1])
         with btn_cols[0]:
-            if st.button("🖼️ Galeri Budaya"):
+            if st.button("Jelajahi Papua", type="primary", use_container_width=True):
                 st.switch_page("pages/2_Galeri.py")
         with btn_cols[1]:
-            if st.button("💬 Chatbot Budaya"):
-                st.switch_page("pages/1_Chatbot.py")
-        with btn_cols[2]:
-            if st.button("🗣️ Penerjemah Tobati"):
+            if st.button("Coba Fitur Penerjemah", use_container_width=True):
                 st.switch_page("pages/4_Penerjemah.py")
-        with btn_cols[3]:
-            if st.button("🎮 Game Kuis"):
-                st.switch_page("pages/3_Kuis.py")
                 
     with col2:
         # Ethnic digital art SVG
@@ -139,7 +133,7 @@ def render_beranda():
             <div class="custom-card" style="text-align: center;">
                 <div class="stat-num">250+</div>
                 <div class="stat-lbl">Suku Adat</div>
-                <div class="stat-desc">Keragaman adat istiadat luhur yang hidup berdampingan di tanah Papua.</div>
+                <div class="stat-desc">Keragaman adat istiadat luhur yang hidup berdampingan.</div>
             </div>
         """, unsafe_allow_html=True)
         
@@ -148,7 +142,7 @@ def render_beranda():
             <div class="custom-card" style="text-align: center;">
                 <div class="stat-num highlight">300+</div>
                 <div class="stat-lbl">Bahasa Daerah</div>
-                <div class="stat-desc">Kekayaan linguistik unik yang dilindungi secara formal dan digital.</div>
+                <div class="stat-desc">Kekayaan linguistik unik yang dilindungi secara formal.</div>
             </div>
         """, unsafe_allow_html=True)
         
@@ -157,7 +151,7 @@ def render_beranda():
             <div class="custom-card" style="text-align: center;">
                 <div class="stat-num">1</div>
                 <div class="stat-lbl">Portal Otomata</div>
-                <div class="stat-desc">Aplikasi pelestarian struktural bahasa pertama dengan simulator FSA & PDA.</div>
+                <div class="stat-desc">Aplikasi pelestarian struktural bahasa pertama di Indonesia.</div>
             </div>
         """, unsafe_allow_html=True)
 
