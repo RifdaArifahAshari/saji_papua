@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Kuis Budaya - Saji Papua</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <!-- NAVIGASI BAR -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo-section">
+                <!-- SVG Icon Logo Etnik-Digital -->
+                <svg class="logo-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="4"
+                        stroke-dasharray="10 6" />
+                    <path d="M50 15 L80 45 L50 75 L20 45 Z" fill="none" stroke="currentColor" stroke-width="3" />
+                    <circle cx="50" cy="45" r="8" fill="var(--highlight-red)" />
+                    <line x1="50" y1="15" x2="50" y2="75" stroke="currentColor" stroke-width="2" />
+                    <line x1="20" y1="45" x2="80" y2="45" stroke="currentColor" stroke-width="2" />
+                </svg>
+                <span class="logo-text">Saji<span>Papua</span></span>
+            </a>
+
+            <ul class="nav-links">
+                <li><a href="index.html" class="nav-link">Beranda</a></li>
+                <li><a href="galeri.html" class="nav-link">Galeri Budaya</a></li>
+                <li><a href="penerjemah.html" class="nav-link">Penerjemah</a></li>
+                <li><a href="kuis.html" class="nav-link active">Game (Kuis)</a></li>
+            </ul>
+
+            <div class="nav-cta">
+                <a href="chatbot.html" class="btn btn-primary">Chatbot</a>
+            </div>
+
+            <button class="menu-btn" aria-label="Toggle Menu" onclick="toggleMenu()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- QUIZ SECTION -->
+    <section style="padding-top: 120px; min-height: 85vh;">
+        <div class="container quiz-container">
+            <div class="features-header">
+                <span class="section-tag">Game Interaktif</span>
+                <h2 class="section-title">Kuis Penjaga <span>Budaya Papua</span></h2>
+                <p class="section-subtitle">Uji pemahaman Anda tentang 6 suku agung di Papua melalui kuis bertingkat 5
+                    level.</p>
+            </div>
+
+            <div class="quiz-card" id="quiz-card">
+                <!-- content will be dynamically injected by JS based on current state -->
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container footer-bottom">
+            <p>&copy; 2026 Saji Papua. Dibuat dengan dedikasi untuk melestarikan bahasa daerah Papua melalui pendekatan
+                <span>Etnik-Digital</span>.
+            </p>
+        </div>
+    </footer>
+
+    <!-- INTERACTION LOGIC & QUESTIONS DATABASE -->
+    <script>
+        function toggleMenu() {
+            const navLinks = document.querySelector(".nav-links");
+            navLinks.classList.toggle("mobile-active");
+        }
+
+        // Sticky Navbar script
+        window.addEventListener("scroll", () => {
+            const navbar = document.querySelector(".navbar");
+            if (window.scrollY > 50) {
+                navbar.classList.add("scrolled");
+            } else {
+                navbar.classList.remove("scrolled");
+            }
+        });
+
+        // Questions Database
+        const QUESTIONS = {
+            1: [
+                {
+                    "question": "Rumah adat Suku Dani yang berbentuk bulat/kerucut dengan atap jerami untuk pria disebut...",
+                    "options": ["Rumah Jew", "Honai", "Humai", "Rumsram"],
+                    "answer": "Honai",
+                    "image": "assets/images/honai_blue_door.jpg",
+                    "explanation": "Rumah adat Suku Dani untuk pria disebut Honai, sedangkan untuk wanita disebut Ebeai."
+                },
+                {
+                    "question": "Apakah nama pakaian penutup kemaluan pria dari labu kering yang khas digunakan oleh Suku Dani?",
+                    "options": ["Kawat penis", "Sali", "Koteka", "Cawat"],
+                    "answer": "Koteka",
+                    "image": "assets/images/pakaian_adat_papua.png",
+                    "explanation": "Koteka adalah penutup kemaluan pria dari labu panjang yang digunakan oleh Suku Dani."
+                },
+                {
+                    "question": "Ikan bakar dan goreng khas Danau Sentani merupakan makanan utama dari suku...",
+                    "options": ["Suku Asmat", "Suku Dani", "Suku Sentani", "Suku Biak"],
+                    "answer": "Suku Sentani",
+                    "image": "assets/images/ikan_bakar_manokwari.jpg",
+                    "explanation": "Makanan khas Suku Sentani banyak memanfaatkan hasil perairan Danau Sentani seperti ikan bakar dan goreng."
+                },
+                {
+                    "question": "Alat musik Tifa yang terbuat dari kayu sagu dan dilapisi kulit merupakan ciri khas dari Suku...",
+                    "options": ["Suku Asmat", "Suku Dani", "Suku Amungme", "Suku Sentani"],
+                    "answer": "Suku Asmat",
+                    "image": "assets/images/tifa.jpg",
+                    "explanation": "Suku Asmat menggunakan Tifa yang terbuat dari kayu pohon sagu sebagai alat musik utama mereka."
+                },
+                {
+                    "question": "Suku yang mendiami kepulauan di Teluk Cenderawasih dan dikenal sebagai pelaut tangguh adalah...",
+                    "options": ["Suku Asmat", "Suku Dani", "Suku Biak", "Suku Kamoro"],
+                    "answer": "Suku Biak",
+                    "image": "assets/images/suku_biak.jpg",
+                    "explanation": "Suku Biak dikenal secara historis sebagai penjelajah laut dan pelaut ulung di sekitar Teluk Cenderawasih."
+                }
+            ],
+            2: [
+                {
+                    "question": "Rumah Jew yang dihuni 10-12 KK dan berfungsi sebagai tempat tinggal sekaligus upacara ukir adalah milik...",
+                    "options": ["Suku Kamoro", "Suku Asmat", "Suku Dani", "Suku Amungme"],
+                    "answer": "Suku Asmat",
+                    "image": "assets/images/Jew.jpg",
+                    "explanation": "Rumah Jew adalah rumah panggung panjang tradisional milik Suku Asmat."
+                },
+                {
+                    "question": "Alat musik tiup dari bambu yang bernama Fu digunakan oleh suku-suku berikut, KECUALI...",
+                    "options": ["Suku Asmat", "Suku Dani", "Suku Kamoro", "Suku Sentani"],
+                    "answer": "Suku Sentani",
+                    "image": "assets/images/fuu.jpg",
+                    "explanation": "Suku Sentani menggunakan alat musik tiup bambu bernama Kase, sedangkan Asmat, Dani, dan Kamoro menggunakan Fu."
+                },
+                {
+                    "question": "Festival Lembah Baliem yang diadakan setiap bulan Agustus dan menyajikan simulasi perang antar suku merupakan acara dari...",
+                    "options": ["Suku Asmat", "Suku Dani", "Suku Kamoro", "Suku Sentani"],
+                    "answer": "Suku Dani",
+                    "image": "assets/images/lembah_baliem.jpg",
+                    "explanation": "Festival Lembah Baliem adalah festival budaya terkenal yang diselenggarakan oleh Suku Dani di Kabupaten Jayawijaya."
+                },
+                {
+                    "question": "Pakaian adat perempuan Suku Dani berupa tas anyaman serat kayu yang digantungkan di punggung disebut...",
+                    "options": ["Sali", "Koteka", "Noken", "Fu"],
+                    "answer": "Noken",
+                    "image": "assets/images/noken.png",
+                    "explanation": "Noken adalah tas tradisional rajutan/anyaman serat kayu khas Papua yang digantungkan di kepala/punggung."
+                },
+                {
+                    "question": "Suku Amungme mendiami rumah adat berbentuk bulat mirip Honai namun berukuran lebih kecil, yang bernama...",
+                    "options": ["Komea", "Humai", "Rumsram", "Khouw"],
+                    "answer": "Humai",
+                    "image": "assets/images/honai_blue_door.jpg",
+                    "explanation": "Rumah adat Suku Amungme bernama Humai, bentuknya bulat mirip Honai namun ukurannya lebih kecil."
+                }
+            ],
+            3: [
+                {
+                    "question": "Rumah adat Suku Biak yang berbentuk panggung seperti perahu terbalik dan berbahan kayu besi adalah...",
+                    "options": ["Rumsram", "Humai", "Komea", "Khouw"],
+                    "answer": "Rumsram",
+                    "image": "assets/images/rumah_rumsram.jpg",
+                    "explanation": "Rumsram adalah rumah adat Suku Biak yang berbentuk perahu terbalik, melambangkan identitas mereka sebagai pelaut."
+                },
+                {
+                    "question": "Tari Isosolo, yaitu tarian selamat datang di atas air/perahu hias khas Danau Sentani, dibawakan oleh...",
+                    "options": ["Suku Biak", "Suku Sentani", "Suku Kamoro", "Suku Asmat"],
+                    "answer": "Suku Sentani",
+                    "image": "assets/images/tari_adat_sentani.jpg",
+                    "explanation": "Tari Isosolo ditarikan di atas perahu di Danau Sentani oleh masyarakat Suku Sentani untuk menyambut tamu agung."
+                },
+                {
+                    "question": "Pakaian adat laki-laki Suku Kamoro berupa penutup kemaluan dari kayu atau labu disebut...",
+                    "options": ["Koteka", "Kawatka", "Sali", "Kawat penis"],
+                    "answer": "Kawatka",
+                    "image": "assets/images/pakaian_adat_papua.png",
+                    "explanation": "Pria Suku Kamoro menggunakan penutup kemaluan bernama Kawatka yang terbuat dari kayu atau labu."
+                },
+                {
+                    "question": "Makanan ritual berupa ulat sagu panggang adalah sajian khas dari...",
+                    "options": ["Suku Asmat", "Suku Dani", "Suku Sentani", "Suku Amungme"],
+                    "answer": "Suku Asmat",
+                    "image": "assets/images/ulat_sagu.jpg",
+                    "explanation": "Ulat sagu panggang merupakan makanan ritual yang sangat penting bagi Suku Asmat."
+                },
+                {
+                    "question": "Alat musik petik dari bambu yang digunakan oleh Suku Amungme adalah...",
+                    "options": ["Kecapi mulut", "Kererut", "Pikon", "Mambisan"],
+                    "answer": "Kecapi mulut",
+                    "image": "assets/images/kecapi_mulut.jpg",
+                    "explanation": "Suku Amungme memiliki alat musik petik bambu tradisional yang menyerupai kecapi."
+                }
+            ],
+            4: [
+                {
+                    "question": "Tradisi Potong Jari adalah simbol duka dan bentuk cinta terhadap orang yang meninggal, dilakukan oleh perempuan suku...",
+                    "options": ["Suku Asmat", "Suku Dani", "Suku Amungme", "Suku Kamoro"],
+                    "answer": "Suku Dani",
+                    "image": "assets/images/potong_jari.png",
+                    "explanation": "Tradisi Potong Jari adalah simbol duka dan bentuk cinta terhadap orang yang meninggal, dilakukan oleh perempuan suku Dani."
+                },
+                {
+                    "question": "Rumah panggung persegi panjang yang dihuni 5-6 KK milik Suku Kamoro disebut...",
+                    "options": ["Khouw", "Karapao", "Humai", "Jew"],
+                    "answer": "Karapao",
+                    "image": "assets/images/rumah_karapao.png",
+                    "explanation": "Rumah adat Suku Kamoro berbentuk persegi panjang panggung yang disebut Karapao."
+                },
+                {
+                    "question": "Tari Yospan (Yosim Pancar) merupakan perpaduan tari perang dan gembira yang sering ditarikan oleh...",
+                    "options": ["Suku Sentani", "Suku Biak", "Suku Dani", "Suku Asmat"],
+                    "answer": "Suku Biak",
+                    "image": "assets/images/tari_wor_sukubiak.jpg",
+                    "explanation": "Tari Yospan (Yosim Pancar) adalah tari pergaulan populer yang sangat identik dengan kebudayaan Suku Biak."
+                },
+                {
+                    "question": "Hidangan lauk dari Sungai Baliem ini memiliki bentuk tubuh seperti udang dinamakan...",
+                    "options": ["Udang Selingkuh", "Udang Bakar", "Udang Jimbaran", "Udang Merah"],
+                    "answer": "Udang Selingkuh",
+                    "image": "assets/images/udang_selingkuh.jpg",
+                    "explanation": "Udang Selingkuh adalah hidangan lauk dari Sungai Baliem yang memiliki bentuk tubuh seperti udang."
+                },
+                {
+                    "question": "Alat musik sejenis trumpet yang berbentuk seperti seruling atau suling milik suku Web bernama?",
+                    "options": ["Pikon", "Amyem", "Fu", "Embra"],
+                    "answer": "Amyem",
+                    "image": "assets/images/amyem.jpg",
+                    "explanation": "Amyem adalah alat musik sejenis trumpet yang dimainkan oleh suku Web dengan cara meniupnya."
+                }
+            ],
+            5: [
+                {
+                    "question": "Upacara Mbismu, yaitu upacara inisiasi pria dengan mendirikan tiang ukiran roh leluhur, dirayakan oleh...",
+                    "options": ["Suku Asmat", "Suku Dani", "Suku Kamoro", "Suku Sentani"],
+                    "answer": "Suku Asmat",
+                    "image": "assets/images/mbismu.png",
+                    "explanation": "Upacara Mbitoro adalah upacara inisiasi pria muda yang sangat sakral bagi Suku Asmat."
+                },
+                {
+                    "question": "Rumah adat Suku Sentani berbentuk panggung di atas air/daratan untuk 1 keluarga besar disebut...",
+                    "options": ["Khogo", "Rumsram", "Humai", "Komea"],
+                    "answer": "Khogo",
+                    "image": "assets/images/rumah_khogo.png",
+                    "explanation": "Khogo adalah rumah adat panggung Suku Sentani yang didirikan di tepi Danau Sentani atau daratan sekitarnya."
+                },
+                {
+                    "question": "Motif tato yang menghiasi tubuh suku Kamoro memiliki bentuk?",
+                    "options": ["Lingkaran & Garis", "Huruf & Angka", "Daun & Bunga", "Bintang & Bulan"],
+                    "answer": "Lingkaran & Garis",
+                    "image": "assets/images/suku_kamoro.jpg",
+                    "explanation": "Motif tato yang menghiasi tubuh suku Kamoro memiliki bentuk lingkaran & garis."
+                },
+                {
+                    "question": "Alat musik tiup dari keong laut bernama...",
+                    "options": ["Fu", "Triton", "Amyem", "Tifa"],
+                    "answer": "Triton",
+                    "image": "assets/images/triton.jpg",
+                    "explanation": "Triton adalah terompet tradisional dari keong laut. Sebagai sarana komunikasi bagi masyarakat setempat sekaligus untuk memanggil bantuan jika ada anggota masyarakat yang terkena masalah atau bahaya."
+                },
+                {
+                    "question": "Upacara adat Khulu adalah pengantaran harta benda adat sebagai bentuk penghormatan terakhir bagi seseorang yang wafat dan memiliki kedudukan terhormat dirayakan oleh Suku...",
+                    "options": ["Suku Sentani", "Suku Biak", "Suku Kamoro", "Suku Dani"],
+                    "answer": "Suku Sentani",
+                    "image": "assets/images/khulu.png",
+                    "explanation": "Upacara Khulu merupakan upacara syukuran masyarakat Suku Sentani atas sebagai bentuk penghormatan terakhir bagi seseorang yang wafat dan memiliki kedudukan terhormat."
+                }
+            ]
+        };
+
+        const LEVEL_TITLES = {
+            1: "🟢 Level 1: Pengenalan Budaya Dasar",
+            2: "🟡 Level 2: Adat Istiadat Lembah & Hutan",
+            3: "🟠 Level 3: Penjelajah Pesisir & Sungai",
+            4: "🔴 Level 4: Tradisi Sakral & Ritual Leluhur",
+            5: "👑 Level 5: Sang Ahli Budaya Papua"
+        };
+
+        const LEVEL_POINTS = {
+            1: 100, 2: 150, 3: 200, 4: 250, 5: 300
+        };
+
+        // Game State variables
+        let state = "intro"; // intro, playing, feedback, level_done, game_done
+        let currentLevel = 1;
+        let questionIdx = 0;
+        let levelCorrect = 0;
+        let selectedOption = null;
+        let levelScores = {};
+        let totalScore = 0;
+
+        const quizCard = document.getElementById("quiz-card");
+
+        function spawnBalloons() {
+            const container = document.createElement("div");
+            container.className = "balloon-container";
+            document.body.appendChild(container);
+            const colors = ["#e5a93c", "#c84b31", "#3b82f6", "#10b981", "#8b5cf6", "#ec4899"];
+
+            for (let i = 0; i < 30; i++) {
+                const balloon = document.createElement("div");
+                balloon.className = "balloon";
+                balloon.style.left = `${Math.random() * 100}vw`;
+                balloon.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                balloon.style.animationDelay = `${Math.random() * 2}s`;
+                balloon.style.width = `${40 + Math.random() * 30}px`;
+                balloon.style.height = `${parseFloat(balloon.style.width) * 1.25}px`;
+                container.appendChild(balloon);
+            }
+            setTimeout(() => container.remove(), 6000);
+        }
+
+        function renderIntro() {
+            let scoresHtml = "";
+            for (let lvl = 1; lvl <= 5; lvl++) {
+                const isCompleted = levelScores[lvl] !== undefined;
+                const completedStr = isCompleted ? "✅ Selesai" : "🔒 Belum";
+                const scoreStr = isCompleted ? `Poin: ${levelScores[lvl]}` : `Max Poin: ${LEVEL_POINTS[lvl]}`;
+                scoresHtml += `
+                    <div class="custom-card" style="text-align: center; padding: 16px; border-color: rgba(198,127,7,0.3);">
+                        <div style="font-size: 1.5rem; font-weight: 800; margin-bottom: 8px;">Level ${lvl}</div>
+                        <div style="font-size: 0.8rem; font-weight: 700; color: var(--accent-gold); margin-bottom: 8px;">${LEVEL_TITLES[lvl].split(":")[1]}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 8px;">${scoreStr}</div>
+                        <div style="font-size: 0.75rem; color: var(--highlight-red); font-weight: 700;">${completedStr}</div>
+                    </div>
+                `;
+            }
+
+            // Find next incomplete level
+            let nextUndoneLevel = 1;
+            for (let l = 1; l <= 5; l++) {
+                if (levelScores[l] === undefined) {
+                    nextUndoneLevel = l;
+                    break;
+                }
+            }
+            currentLevel = nextUndoneLevel;
+
+            let buttonHtml = "";
+            if (Object.keys(levelScores).length < 5) {
+                buttonHtml = `<button class="btn btn-primary" onclick="startLevel()">🚀 Mulai ${LEVEL_TITLES[currentLevel]}</button>`;
+            } else {
+                buttonHtml = `<button class="btn btn-primary" onclick="showFinalSummary()">🏁 Lihat Hasil Akhir</button>`;
+                spawnBalloons();
+            }
+
+            quizCard.innerHTML = `
+                <div class="custom-card" style="padding: 30px; border-color: var(--accent-gold); text-align: center; margin-bottom: 30px;">
+                    <h3 style="color: var(--accent-gold); margin-bottom: 15px; font-size:1.6rem;">Selamat Datang di Arena Kuis Papua!</h3>
+                    <p style="color: var(--text-secondary); font-size: 1.05rem; line-height: 1.6; max-width: 600px; margin: 0 auto;">
+                        Selesaikan 5 level tantangan kebudayaan. Setiap level memiliki 5 pertanyaan pilihan ganda.<br>
+                        Semakin tinggi level, semakin banyak poin yang bisa Anda kumpulkan!
+                    </p>
+                </div>
+                <div style="margin-bottom: 24px; font-family: var(--font-heading); font-weight: 700;">🏅 STATUS LEVEL:</div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                    ${scoresHtml}
+                </div>
+                <div style="display: flex; gap: 16px; justify-content: center;">
+                    ${buttonHtml}
+                    <button class="btn btn-secondary" onclick="resetQuiz()">🔄 Ulangi Kuis</button>
+                </div>
+            `;
+        }
+
+        function startLevel() {
+            state = "playing";
+            questionIdx = 0;
+            levelCorrect = 0;
+            selectedOption = null;
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const levelQs = QUESTIONS[currentLevel];
+            const q = levelQs[questionIdx];
+
+            let optionsHtml = "";
+            q.options.forEach((opt, idx) => {
+                const label = String.fromCharCode(65 + idx); // A, B, C, D
+                const isSelected = selectedOption === opt;
+                optionsHtml += `
+                    <div class="option-card ${isSelected ? 'selected' : ''}" onclick="selectOption('${opt}')">
+                        <div class="option-circle">${label}</div>
+                        <span>${opt}</span>
+                    </div>
+                `;
+            });
+
+            quizCard.innerHTML = `
+                <div class="level-badge">${LEVEL_TITLES[currentLevel]}</div>
+                <div style="display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 8px;">
+                    <span>Soal ${questionIdx + 1} dari 5</span>
+                    <span style="color: var(--accent-gold);">Skor Level: ${levelCorrect}/5</span>
+                </div>
+                <div class="quiz-progress-bar">
+                    <div class="quiz-progress-fill" style="width: ${(questionIdx / 5.0) * 100}%"></div>
+                </div>
+                <div class="quiz-grid">
+                    <div class="quiz-visual">
+                        <img src="${q.image}" alt="Visualisasi Budaya">
+                    </div>
+                    <div>
+                        <div style="background: var(--bg-light-base); border: 1px solid var(--border-color); padding: 20px; border-radius: 16px; font-weight: 700; font-size: 1.1rem; line-height: 1.5; margin-bottom: 20px;">
+                            ${q.question}
+                        </div>
+                        <div class="options-list">
+                            ${optionsHtml}
+                        </div>
+                        <div class="quiz-btn-area">
+                            <button class="btn btn-primary" onclick="submitAnswer()">Kirim Jawaban</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function selectOption(opt) {
+            selectedOption = opt;
+            renderQuestion();
+        }
+
+        function submitAnswer() {
+            if (!selectedOption) {
+                alert("Silakan pilih salah satu jawaban!");
+                return;
+            }
+
+            const levelQs = QUESTIONS[currentLevel];
+            const q = levelQs[questionIdx];
+            const isCorrect = selectedOption === q.answer;
+
+            if (isCorrect) {
+                levelCorrect++;
+            }
+
+            state = "feedback";
+
+            let optionsHtml = "";
+            q.options.forEach((opt, idx) => {
+                const label = String.fromCharCode(65 + idx);
+                const isSelected = selectedOption === opt;
+                const isCorrectOpt = opt === q.answer;
+
+                let borderStyle = "";
+                if (isCorrectOpt) borderStyle = "border-color: #4CAF50; background: rgba(76, 175, 80, 0.05); color: #2e7d32;";
+                else if (isSelected && !isCorrectOpt) borderStyle = "border-color: #f44336; background: rgba(244, 67, 54, 0.05); color: #c62828;";
+
+                optionsHtml += `
+                    <div class="option-card" style="cursor: default; ${borderStyle}">
+                        <div class="option-circle" style="${isCorrectOpt ? 'background:#4CAF50; border-color:#4CAF50; color:#fff;' : (isSelected ? 'background:#f44336; border-color:#f44336; color:#fff;' : '')}">${label}</div>
+                        <span>${opt}</span>
+                    </div>
+                `;
+            });
+
+            quizCard.innerHTML = `
+                <div class="level-badge">${LEVEL_TITLES[currentLevel]}</div>
+                <div style="display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 8px;">
+                    <span>Hasil Soal ${questionIdx + 1} dari 5</span>
+                </div>
+                <div class="quiz-progress-bar">
+                    <div class="quiz-progress-fill" style="width: ${((questionIdx + 1) / 5.0) * 100}%"></div>
+                </div>
+                <div class="quiz-grid">
+                    <div class="quiz-visual">
+                        <img src="${q.image}" alt="Visualisasi Budaya">
+                    </div>
+                    <div>
+                        <div class="feedback-area ${isCorrect ? 'correct' : 'wrong'}">
+                            <div class="feedback-title">${isCorrect ? '🟢 Jawaban Benar!' : '🔴 Jawaban Salah!'}</div>
+                            <div class="feedback-desc">
+                                <strong>Kunci Jawaban</strong>: <span style="color: var(--accent-gold-dark);">${q.answer}</span><br><br>
+                                <strong>Penjelasan</strong>:<br>
+                                ${q.explanation}
+                            </div>
+                        </div>
+                        <div class="options-list" style="margin-top:20px;">
+                            ${optionsHtml}
+                        </div>
+                        <div class="quiz-btn-area">
+                            <button class="btn btn-primary" onclick="nextQuestion()">Lanjutkan</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function nextQuestion() {
+            questionIdx++;
+            selectedOption = null;
+
+            if (questionIdx < 5) {
+                state = "playing";
+                renderQuestion();
+            } else {
+                // Level completed
+                state = "level_done";
+                const maxPts = LEVEL_POINTS[currentLevel];
+                const scoreEarned = Math.round((levelCorrect / 5.0) * maxPts);
+                levelScores[currentLevel] = scoreEarned;
+                totalScore = Object.values(levelScores).reduce((a, b) => a + b, 0);
+
+                spawnBalloons();
+
+                quizCard.innerHTML = `
+                    <div class="custom-card" style="text-align: center; border-color: var(--accent-gold); padding: 40px 20px;">
+                        <div style="font-size: 4rem; margin-bottom: 10px;">🏆</div>
+                        <h3 style="color: var(--accent-gold); margin-bottom: 15px; font-size:1.6rem;">Apresiasi Hasil Kerja Keras Anda!</h3>
+                        <p style="font-size: 1.25rem; color: var(--text-primary); margin-bottom: 20px;">
+                            Anda menjawab benar <strong>${levelCorrect} dari 5 soal</strong>.
+                        </p>
+                        <div style="display: inline-block; padding: 12px 30px; background: rgba(198, 127, 7, 0.05); border: 2px solid var(--accent-gold); border-radius: 12px; font-size: 1.5rem; font-weight: 800; color: var(--text-gold); margin-bottom: 24px;">
+                            Poin Diperoleh: +${scoreEarned} / ${maxPts}
+                        </div>
+                        <p style="color: var(--text-secondary); max-width: 600px; margin: 0 auto; line-height: 1.6; font-size:0.95rem;">
+                            Terima kasih telah berpartisipasi menjaga warisan tradisi Papua. Pengetahuan Anda sangat berharga bagi pelestarian ini.
+                        </p>
+                    </div>
+                    <div style="display: flex; gap: 16px; justify-content: center; margin-top: 30px;">
+                        <button class="btn btn-primary" onclick="renderIntro()">Kembali ke Papan Level</button>
+                    </div>
+                `;
+            }
+        }
+
+        function showFinalSummary() {
+            state = "game_done";
+            let maxTotal = Object.values(LEVEL_POINTS).reduce((a, b) => a + b, 0);
+
+            let scoresRow = "";
+            for (let lvl = 1; lvl <= 5; lvl++) {
+                scoresRow += `
+                    <div class="custom-card" style="text-align: center; padding: 16px; border-color: rgba(198,127,7,0.15);">
+                        <strong>Level ${lvl}</strong><br>
+                        <span style="color: var(--accent-gold); font-size: 1.3rem; font-weight: 800;">${levelScores[lvl]}/${LEVEL_POINTS[lvl]}</span>
+                    </div>
+                `;
+            }
+
+            quizCard.innerHTML = `
+                <div class="custom-card" style="text-align: center; border-color: var(--highlight-red); padding: 40px 20px; margin-bottom: 30px;">
+                    <div style="font-size: 5rem; margin-bottom: 10px;">🏅</div>
+                    <h2 style="color: var(--accent-gold-dark); margin-bottom: 12px; font-size:1.8rem;">Gelar: Duta Agung Budaya Papua</h2>
+                    <p style="font-size: 1.15rem; color: var(--text-secondary); margin-bottom: 20px;">
+                        Anda telah menyelesaikan seluruh 5 level kuis kebudayaan Papua.
+                    </p>
+                    <div style="font-size: 2.2rem; font-weight: 900; color: var(--highlight-red); text-shadow: 0 2px 10px rgba(176,55,30,0.15); margin-bottom: 20px;">
+                        Total Skor: ${totalScore} / ${maxTotal} Poin
+                    </div>
+                    <p style="color: var(--text-secondary); max-width: 600px; margin: 0 auto; line-height: 1.6; font-size:0.95rem;">
+                        Pengetahuan Anda tentang Suku Asmat, Dani, Amungme, Kamoro, Biak, dan Sentani sangat luar biasa! 
+                        Teruslah mencintai dan melestarikan warisan agung budaya nusantara.
+                    </p>
+                </div>
+                <div style="margin-bottom: 16px; font-family: var(--font-heading); font-weight: 700;">📈 RINCIAN SKOR PER LEVEL:</div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                    ${scoresRow}
+                </div>
+                <div style="display: flex; justify-content: center; gap: 16px;">
+                    <button class="btn btn-primary" onclick="resetQuiz()">🔄 Main Lagi</button>
+                    <a href="index.html" class="btn btn-secondary">🏠 Beranda</a>
+                </div>
+            `;
+            spawnBalloons();
+        }
+
+        function resetQuiz() {
+            levelScores = {};
+            totalScore = 0;
+            renderIntro();
+        }
+
+        // Run intro on launch
+        renderIntro();
+    </script>
+</body>
+
+</html>

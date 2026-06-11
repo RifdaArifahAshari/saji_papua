@@ -1,0 +1,1902 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galeri Budaya - Saji Papua</title>
+    <meta name="description"
+        content="Jelajahi galeri budaya Papua: rumah adat, pakaian adat, tari tradisional, hari besar, alat musik, dan wisata Papua yang kaya dan memukau.">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* === GALLERY PAGE SPECIFIC STYLES === */
+
+        /* Modal Overlay */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(6px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-box {
+            background: #fff;
+            border-radius: 20px;
+            max-width: 680px;
+            width: 100%;
+            overflow: hidden;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+            animation: modalIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes modalIn {
+            from {
+                transform: translateY(40px) scale(0.96);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-img {
+            width: 100%;
+            height: 320px;
+            object-fit: contain;
+            background: #f8f4ef;
+        }
+
+        .modal-img-placeholder {
+            width: 100%;
+            height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 72px;
+        }
+
+        .modal-body {
+            padding: 28px 32px 32px;
+        }
+
+        .modal-tag {
+            display: inline-block;
+            background: var(--accent-gold-light);
+            color: var(--accent-gold-dark);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+        }
+
+        .modal-title {
+            font-family: var(--font-heading);
+            font-size: 1.6rem;
+            color: var(--text-primary);
+            margin-bottom: 14px;
+        }
+
+        .modal-desc {
+            color: var(--text-secondary);
+            line-height: 1.75;
+            font-size: 0.95rem;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 22px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+            transition: var(--transition-quick);
+        }
+
+        .modal-close:hover {
+            background: var(--highlight-red);
+            color: #fff;
+        }
+
+        .modal-box {
+            position: relative;
+        }
+
+        /* Filter Pills */
+        .gallery-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .filter-btn {
+            padding: 9px 20px;
+            border-radius: 40px;
+            border: 2px solid var(--border-color);
+            background: transparent;
+            color: var(--text-secondary);
+            font-family: var(--font-body);
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-quick);
+            letter-spacing: 0.3px;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--accent-gold);
+            color: var(--accent-gold-dark);
+            background: var(--accent-gold-glow);
+        }
+
+        .filter-btn.active {
+            background: var(--accent-gold);
+            border-color: var(--accent-gold);
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(198, 127, 7, 0.3);
+        }
+
+        /* Gallery Grid */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .gallery-item {
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            background: var(--bg-light-card);
+            box-shadow: var(--card-shadow);
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 50px rgba(150, 120, 90, 0.15);
+            border-color: var(--accent-gold);
+        }
+
+        .gallery-item.hidden,
+        .festival-article.hidden {
+            display: none;
+        }
+
+        .gallery-img-wrapper {
+            position: relative;
+            height: 220px;
+            overflow: hidden;
+        }
+
+        .gallery-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .gallery-item:hover .gallery-img-wrapper img {
+            transform: scale(1.07);
+        }
+
+        /* Gradient Placeholder for items without photos */
+        .gallery-img-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 3rem;
+            transition: transform 0.5s ease;
+        }
+
+        .gallery-item:hover .gallery-img-placeholder {
+            transform: scale(1.07);
+        }
+
+        .gallery-img-placeholder span.ph-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(255, 255, 255, 0.75);
+            font-family: var(--font-body);
+        }
+
+        /* Gradient presets */
+        .ph-dance {
+            background: linear-gradient(135deg, #e05c45 0%, #b03720 60%, #7a1f0a 100%);
+        }
+
+        .ph-festival {
+            background: linear-gradient(135deg, #f7a11a 0%, #d46b08 60%, #9e4200 100%);
+        }
+
+        .ph-music {
+            background: linear-gradient(135deg, #4e8a3a 0%, #2d6a1f 60%, #165000 100%);
+        }
+
+        .ph-tourism {
+            background: linear-gradient(135deg, #1a7ab0 0%, #0d5a8c 60%, #023460 100%);
+        }
+
+        .ph-clothing {
+            background: linear-gradient(135deg, #7b4fa0 0%, #5a2c80 60%, #3a1060 100%);
+        }
+
+        .ph-food {
+            background: linear-gradient(135deg, #d97e2a 0%, #a84f0a 60%, #6b2c00 100%);
+        }
+
+        /* Card Footer Info */
+        .gallery-card-info {
+            padding: 16px 20px 18px;
+        }
+
+        .gallery-item-tag {
+            display: inline-block;
+            background: var(--accent-gold-light);
+            color: var(--accent-gold-dark);
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            margin-bottom: 8px;
+        }
+
+        .gallery-card-info h4 {
+            font-size: 1.05rem;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .gallery-card-info p {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.55;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .gallery-read-more {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 10px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--accent-gold-dark);
+            text-decoration: none;
+        }
+
+        .gallery-read-more svg {
+            width: 14px;
+            height: 14px;
+            transition: transform 0.2s;
+        }
+
+        .gallery-item:hover .gallery-read-more svg {
+            transform: translateX(4px);
+        }
+
+        /* Stats bar */
+        .gallery-stat-bar {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .gallery-stat {
+            text-align: center;
+        }
+
+        .gallery-stat strong {
+            display: block;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--accent-gold);
+            font-family: var(--font-heading);
+        }
+
+        .gallery-stat span {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* === HARI BESAR ARTICLE STYLE === */
+        .festival-article {
+            background: var(--bg-light-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 28px 32px;
+            box-shadow: var(--card-shadow);
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            grid-column: 1 / -1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .festival-article::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 5px;
+            background: linear-gradient(to bottom, var(--accent-gold), #d46b08);
+            border-radius: 16px 0 0 16px;
+        }
+
+        .festival-article:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 50px rgba(150, 120, 90, 0.15);
+            border-color: var(--accent-gold);
+        }
+
+        .festival-article-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .festival-article-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #f7a11a 0%, #9e4200 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            flex-shrink: 0;
+        }
+
+        .festival-article-meta {
+            flex: 1;
+        }
+
+        .festival-article-meta .gallery-item-tag {
+            margin-bottom: 4px;
+        }
+
+        .festival-article-meta h4 {
+            font-size: 1.18rem;
+            font-family: var(--font-heading);
+            color: var(--text-primary);
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .festival-upacara-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .festival-upacara-list li {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            padding: 14px 16px;
+            background: var(--bg-light);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            transition: background 0.2s;
+        }
+
+        .festival-upacara-list li:hover {
+            background: var(--accent-gold-glow);
+            border-color: var(--accent-gold);
+        }
+
+        .upacara-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-gold);
+            flex-shrink: 0;
+            margin-top: 6px;
+        }
+
+        .upacara-content strong {
+            display: block;
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--accent-gold-dark);
+            margin-bottom: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .upacara-content p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin: 0;
+            -webkit-line-clamp: unset;
+            overflow: visible;
+            display: block;
+        }
+
+        @media(max-width: 700px) {
+            .festival-article {
+                padding: 20px 20px 20px 24px;
+            }
+        }
+
+        @media(max-width: 600px) {
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .gallery-stat-bar {
+                gap: 14px;
+            }
+
+            .gallery-stat strong {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVIGASI BAR -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo-section">
+                <svg class="logo-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="4"
+                        stroke-dasharray="10 6" />
+                    <path d="M50 15 L80 45 L50 75 L20 45 Z" fill="none" stroke="currentColor" stroke-width="3" />
+                    <circle cx="50" cy="45" r="8" fill="var(--highlight-red)" />
+                    <line x1="50" y1="15" x2="50" y2="75" stroke="currentColor" stroke-width="2" />
+                    <line x1="20" y1="45" x2="80" y2="45" stroke="currentColor" stroke-width="2" />
+                </svg>
+                <span class="logo-text">Saji<span>Papua</span></span>
+            </a>
+
+            <ul class="nav-links">
+                <li><a href="index.html" class="nav-link">Beranda</a></li>
+                <li><a href="galeri.html" class="nav-link active">Galeri Budaya</a></li>
+                <li><a href="penerjemah.html" class="nav-link">Penerjemah</a></li>
+                <li><a href="kuis.html" class="nav-link">Game (Kuis)</a></li>
+            </ul>
+
+            <div class="nav-cta">
+                <a href="chatbot.html" class="btn btn-primary">Chatbot</a>
+            </div>
+
+            <button class="menu-btn" aria-label="Toggle Menu" onclick="toggleMenu()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- GALLERY SECTION -->
+    <section class="gallery-section" style="padding-top: 110px; min-height: 85vh;">
+        <div class="container">
+            <div class="features-header">
+                <span class="section-tag">Warisan Visual</span>
+                <h1 class="section-title">Galeri Budaya <span>Papua</span></h1>
+                <p class="section-subtitle">Eksplorasi kekayaan warisan budaya Papua — dari rumah adat, pakaian
+                    tradisional,
+                    tarian sakral, hari besar, alat musik hingga pesona wisata alam yang memukau.</p>
+            </div>
+
+            <!-- Filter Buttons -->
+            <div class="gallery-filters">
+                <button class="filter-btn active" data-filter="all" onclick="filterCategory(this, 'all')"
+                    id="filter-all">Semua</button>
+                <button class="filter-btn" data-filter="house" onclick="filterCategory(this, 'house')"
+                    id="filter-house">🏠 Rumah Adat</button>
+                <button class="filter-btn" data-filter="clothing" onclick="filterCategory(this, 'clothing')"
+                    id="filter-clothing">👘 Pakaian Adat</button>
+                <button class="filter-btn" data-filter="dance" onclick="filterCategory(this, 'dance')"
+                    id="filter-dance">💃 Tari</button>
+                <button class="filter-btn" data-filter="festival" onclick="filterCategory(this, 'festival')"
+                    id="filter-festival">🎉 Hari Besar</button>
+                <button class="filter-btn" data-filter="music" onclick="filterCategory(this, 'music')"
+                    id="filter-music">🥁 Alat Musik</button>
+                <button class="filter-btn" data-filter="tourism" onclick="filterCategory(this, 'tourism')"
+                    id="filter-tourism">🌿 Wisata</button>
+                <button class="filter-btn" data-filter="food" onclick="filterCategory(this, 'food')" id="filter-food">🍛
+                    Makanan</button>
+            </div>
+
+            <!-- Gallery Grid -->
+            <div class="gallery-grid" id="galleryGrid">
+
+                <!-- ===== RUMAH ADAT ===== -->
+
+                <!-- 1. Rumah Jew -->
+                <div class="gallery-item" data-category="house"
+                    onclick="openModal('Rumah Adat','Rumah Jew (Suku Asmat)','assets/images/rumah_jew.png',
+                    'Dikenal dengan Rumah Bujang merupakan rumah adat yang berasal dari Suku Asmat, khususnya di provinsi Papua yaitu Agats. Rumah adat ini memiliki nama lain seperti Je, Jeu, Yeu, atau Yai. Disebut rumah bujang karena rumah ini tempat berkumpul laki-laki yang belum berkeluarga atau masih berstatus bujang. Untuk wanita dan anak di usia 10 tahun ke bawah tidak diperbolehkan masuk.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/rumah_jew.png" alt="Rumah Jew Suku Asmat">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Rumah Adat</span>
+                        <h4>Rumah Jew</h4>
+                        <p>Rumah bujang khas Suku Asmat, tempat berkumpul pria belum menikah dan pelaksanaan upacara
+                            ukir sakral.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 2. Rumah Tsyem -->
+                <div class="gallery-item" data-category="house"
+                    onclick="openModal('Rumah Adat','Rumah Tsyem (Suku Asmat)','assets/images/rumah_tsyem.png',
+                    'Rumah adat Tsyem menjadi tempat suku Asmat yang sudah berkeluarga. Rumah adat Tsyem ini dibuat dan ditempatkan di sekitar rumah adat Jew dengan ukuran yang relatif lebih kecil. Jenis rumah ini ditempati oleh maksimal tiga kepala keluarga dari anggota kelompok masyarakat. Mulai dari ibu, bapak, anak yang sudah menikah bersama pasangannya. Rumah Tsyem tidak memiliki fungsi yang sakral karena segala jenis acara tradisional diselenggarakan di rumah Bujang.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/rumah_tsyem.png" alt="Rumah Tsyem Suku Asmat">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Rumah Adat</span>
+                        <h4>Rumah Tsyem</h4>
+                        <p>Tempat tinggal keluarga Suku Asmat, dibangun di sekitar Rumah Jew dan dihuni hingga 3 kepala
+                            keluarga.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 3. Rumah Honai -->
+                <div class="gallery-item" data-category="house"
+                    onclick="openModal('Rumah Adat','Rumah Honai (Suku Dani)','assets/images/honai_blue_door.jpg',
+                    'Rumah Honai adalah rumah adat suku Dani yang berada di pegunungan tengah Papua. Rumah Honai diciptakan untuk menahan hawa dingin, berbentuk bulat dengan atap Jerami membantu menyimpan panas dalam ruangan. Struktur rumah dibentuk bulat membuat angin tidak bisa masuk dengan mudah. Fungsi utama Honai adalah sebagai tempat tinggal khusus bagi pria dewasa, tempat tidur, tempat belajar adat, serta menyimpan senjata dan benda-benda sakral.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/honai_blue_door.jpg" alt="Rumah Adat Honai Suku Dani">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Rumah Adat</span>
+                        <h4>Rumah Honai</h4>
+                        <p>Rumah adat Suku Dani berbentuk bundar dengan atap jerami tebal, dirancang untuk melindungi
+                            dari dinginnya pegunungan.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 4. Rumah Ebeai -->
+                <div class="gallery-item" data-category="house"
+                    onclick="openModal('Rumah Adat','Rumah Ebeai (Suku Dani)','assets/images/rumah_ebeai.png',
+                    'Rumah Ebeai adalah rumah suku Dani untuk perempuan dan anak perempuan. Fakta menarik bahwa anak laki-laki usia di bawah 10 tahun masih bisa tinggal di rumah Ebeai, tetapi setelah usianya di atas 10 tahun maka harus pindah ke rumah Honai. Bentuknya mirip dengan Honai, namun ukurannya sedikit lebih kecil dan atapnya landai. Ebeai biasanya dibangun di belakang Honai, posisi yang dianggap lebih terlindungi.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/rumah_ebeai.png" alt="Rumah Ebeai Suku Dani">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Rumah Adat</span>
+                        <h4>Rumah Ebeai</h4>
+                        <p>Rumah perempuan Suku Dani, lebih kecil dari Honai dengan atap lebih landai, dibangun di
+                            posisi terlindungi di belakang Honai.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 5. Rumah Rumsram -->
+                <div class="gallery-item" data-category="house"
+                    onclick="openModal('Rumah Adat','Rumah Rumsram (Suku Biak Numfor)','assets/images/rumah_rumsram.png',
+                    'Rumah Rumsram adalah rumah adat suku Biak Numfor dengan atap berbentuk perahu terbalik. Rumah ini berfungsi sebagai tempat pendidikan anak laki-laki usia 6–8 tahun, bukan untuk ditinggali. Wanita tidak boleh masuk. Tingginya mencapai 6–8 meter dengan dua lantai, berdinding bambu air dan pelepah sagu, serta atap dari daun sagu kering.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/rumah_rumsram.png" alt="Rumah Rumsram Suku Biak Numfor">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Rumah Adat</span>
+                        <h4>Rumah Rumsram</h4>
+                        <p>Rumah adat Suku Biak Numfor dengan atap perahu terbalik, berfungsi sebagai tempat pendidikan
+                            anak laki-laki usia 6-8 tahun.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 6. Rumah Karapao -->
+                <div class="gallery-item" data-category="house"
+                    onclick="openModal('Rumah Adat','Rumah Karapao (Suku Kamoro)','assets/images/rumah_karapao.png',
+                    'Rumah Karapao biasa disebut Karapauw, berasal dari Papua Tengah khususnya suku Kamoro di Mimika. Rumah ini bisa berfungsi sebagai tempat tinggal, simbol tradisi dan budaya, pusat pendidikan keahlian dasar anak-anak yang menjadi bekal hidup saat dewasa. Pembangunan rumah adat Karapao merupakan bagian dari upacara yang disebut dengan inisiasi pendewasaan dalam hubungannya dengan pembangunan rumah setiap tiga atau empat tahun sekali.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/rumah_karapao.png" alt="Rumah Karapao Suku Kamoro">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Rumah Adat</span>
+                        <h4>Rumah Karapao</h4>
+                        <p>Rumah adat Suku Kamoro dari Papua Tengah, pusat pendidikan anak dan bagian dari upacara
+                            inisiasi pendewasaan.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 7. Rumah Khogo -->
+                <div class="gallery-item" data-category="house"
+                    onclick="openModal('Rumah Adat','Rumah Khogo (Suku Sentani)','assets/images/rumah_khogo.png',
+                    'Rumah Khogo adalah rumah adat suku Sentani di Danau Sentani, Papua. Rumah panggung di atas air ini ditinggali oleh satu keluarga besar (3–4 KK). Berfungsi sebagai tempat tinggal sehari-hari sekaligus upacara adat seperti pesta panen ikan dan musyawarah keluarga. Ruang di dalamnya tidak bersekat, mencerminkan kebersamaan. Akses keluar masuk menggunakan perahu kecil (sampan).')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/rumah_khogo.png" alt="Rumah Khogo Suku Sentani">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Rumah Adat</span>
+                        <h4>Rumah Khogo</h4>
+                        <p>Rumah panggung atas air Suku Sentani, di Danau Sentani. Tak bersekat sebagai cerminan
+                            semangat kebersamaan.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- ===== PAKAIAN ADAT ===== -->
+
+                <!-- 1 Pakaian Asmat l -->
+                <div class="gallery-item" data-category="clothing"
+                    onclick="openModal('Pakaian Adat','Pakaian Adat Suku Asmat Laki Laki','assets/images/suku_asmat_l.jpg',
+                    'Pakaian tradisional laki-laki Suku Asmat terdiri dari kawat penis (tutup kemaluan dari labu kering), rok rumbai dari serat sagu atau daun sagu, serta hiasan bulu kasuari dan taring babi. Pakaian perempuan berupa rok rumbai pendek dari serat sagu atau daun sagu, dan terkadang kalung dari biji-bijian atau tulang. Hiasan tubuh berupa tato atau lukisan tubuh dari arang dan tanah merah sangat penting dalam ritual.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/suku_asmat_l.jpg" alt="Pakaian Adat Papua">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Pakaian Adat</span>
+                        <h4>Pakaian Adat Suku Asmat Laki-laki</h4>
+                        <p>Busana adat dengan hiasan bulu kasuari, taring babi, dan ukiran tubuh — ekspresi identitas
+                            Suku Asmat yang penuh makna.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+                <!-- 1 Pakaian Asmat p-->
+                <div class="gallery-item" data-category="clothing"
+                    onclick="openModal('Pakaian Adat','Pakaian Adat Suku Asmat Perempuan','assets/images/suku_asmat_p.jpg',
+                    'Pakaian adat Suku Asmat terdiri atas pummi (rok mini dari anyaman daun sagu), peni/samsur (penutup dada dari daun sagu) untuk perempuan.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/suku_asmat_p.jpg" alt="Pakaian Adat Papua">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Pakaian Adat</span>
+                        <h4>Pakaian Adat Suku Asmat Perempuan</h4>
+                        <p>Busana adat dengan hiasan bulu kasuari, taring babi, dan ukiran tubuh — ekspresi identitas
+                            Suku Asmat yang penuh makna.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 2Koteka Dani -->
+                <div class="gallery-item" data-category="clothing"
+                    onclick="openModal('Pakaian Adat','Pakaian Adat Suku Dani','assets/images/suku_dani.jpg',
+                    'Pakaian tradisional laki-laki Suku Dani terdiri dari kawat penis (tutup kemaluan dari labu kering), rok rumbai dari serat sagu atau daun sagu, serta hiasan bulu kasuari dan taring babi. Pakaian perempuan berupa rok rumbai pendek dari serat sagu atau daun sagu, dan terkadang kalung dari biji-bijian atau tulang. Hiasan tubuh berupa tato atau lukisan tubuh dari arang dan tanah merah sangat penting dalam ritual.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/suku_dani.jpg" alt="Pakaian Adat Papua">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Pakaian Adat</span>
+                        <h4>Pakaian Adat Suku Dani</h4>
+                        <p>Busana adat dengan hiasan bulu kasuari, taring babi, dan ukiran tubuh — ekspresi identitas
+                            Suku Dani yang penuh makna.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 3Pakaian Amungme -->
+                <div class="gallery-item" data-category="clothing"
+                    onclick="openModal('Pakaian Adat','Pakaian Adat Suku Biak Numfor','assets/images/suku_amungme.jpg','Pakaian adat Suku Biak mencerminkan kehidupan pelaut dan penguasa lautan. Laki-laki menggunakan penutup dari kulit kayu atau kain tenun, dengan hiasan kepala bulu kasuari dan cenderawasih. Perempuan mengenakan kain Var — kain sarung yang diikat di dada. Perhiasan dari kerang laut, manik-manik, dan kalung gigi ikan paus menjadi kebanggaan.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/suku_amungme.jpg" alt="Pakaian Adat Papua">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Pakaian Adat</span>
+                        <h4>Pakaian Adat Suku Amungme</h4>
+                        <p>Kain Var dan perhiasan kerang laut — busana khas pelaut ulung Suku Amungme yang
+                            mencerminkan
+                            kejayaan maritim Papua.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+                <!-- 4 Pakaian Kamoro -->
+                <div class="gallery-item" data-category="clothing"
+                    onclick="openModal('Pakaian Adat','Pakaian Adat Suku Kamoro','assets/images/suku_kamoro.jpg',
+                    'Pakaian tradisional laki-laki Suku Kamoro terdiri dari penutup penis dari kulit kayu atau kain tenun, rok rumbai dari serat sagu, serta hiasan kepala bulu kasuari dan taring babi. Pakaian perempuan berupa rok rumbai pendek dari serat sagu atau daun sagu, dan terkadang kalung dari biji-bijian atau tulang. Hiasan tubuh berupa tato atau lukisan tubuh dari arang dan tanah merah sangat penting dalam ritual.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/suku_kamoro.jpg" alt="Pakaian Adat Papua">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Pakaian Adat</span>
+                        <h4>Pakaian Adat Suku Kamoro</h4>
+                        <p>Busana adat dengan hiasan bulu kasuari, taring babi, dan ukiran tubuh — ekspresi
+                            identitas
+                            Suku Kamoro yang penuh makna.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+                <!-- 5 Pakaian Biak -->
+                <div class="gallery-item" data-category="clothing"
+                    onclick="openModal('Pakaian Adat','Pakaian Adat Suku Biak','assets/images/suku_biak.jpg',
+                    'Pakaian tradisional laki-laki Suku Biak terdiri dari penutup penis dari kulit kayu atau kain tenun, rok rumbai dari serat sagu, serta hiasan kepala bulu kasuari dan taring babi. Pakaian perempuan berupa rok rumbai pendek dari serat sagu atau daun sagu, dan terkadang kalung dari biji-bijian atau tulang. Hiasan tubuh berupa tato atau lukisan tubuh dari arang dan tanah merah sangat penting dalam ritual.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/suku_biak.jpg" alt="Pakaian Adat Papua">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Pakaian Adat</span>
+                        <h4>Pakaian Adat Suku Biak</h4>
+                        <p>Busana adat dengan hiasan bulu kasuari, taring babi, dan ukiran tubuh — ekspresi identitas
+                            Suku Biak yang penuh makna.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+                <!-- 6Pakaian Sentani -->
+                <div class="gallery-item" data-category="clothing"
+                    onclick="openModal('Pakaian Adat','Pakaian Adat Suku Sentani','assets/images/suku_sentani.jpg',
+                    'Pakaian tradisional laki-laki Suku Sentani terdiri dari penutup penis dari kulit kayu atau kain tenun, rok rumbai dari serat sagu, serta hiasan kepala bulu kasuari dan taring babi. Pakaian perempuan berupa rok rumbai pendek dari serat sagu atau daun sagu, dan terkadang kalung dari biji-bijian atau tulang. Hiasan tubuh berupa tato atau lukisan tubuh dari arang dan tanah merah sangat penting dalam ritual.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/suku_sentani.jpg" alt="Pakaian Adat Papua">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Pakaian Adat</span>
+                        <h4>Pakaian Adat Suku Sentani</h4>
+                        <p>Busana adat dengan hiasan bulu kasuari, taring babi, dan ukiran tubuh — ekspresi identitas
+                            Suku Sentani yang penuh makna.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+
+                <!-- ===== TARI ===== -->
+
+                <!-- 1. Tari Det Pok Mbui - Suku Asmat -->
+                <div class="gallery-item" data-category="dance"
+                    onclick="openModal('Tari Tradisional','Tari Det Pok Mbui (Suku Asmat)','assets/images/tari_det_pok_mbui.jpg',
+                    'Tari Det Pok Mbui berasal dari wilayah Agats, Sawa Erma, dan Primapun di Kabupaten Asmat, Provinsi Papua Selatan. Eksistensi tarian ini sudah ada sejak zaman sebelum Indonesia merdeka. Tarian ini digunakan bersama suku lain untuk menunjukkan kesiapan dalam mempertahankan wilayah serta menjaga kehormatan. Gerakannya menekankan pada kekuatan kaki, hentakan tanah, dan teriakan khas yang penuh semangat juang.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/tari_det_pok_mbui.jpg" alt="Tari Det Pok Mbui Suku Asmat">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Tari Tradisional</span>
+                        <h4>Tari Det Pok Mbui</h4>
+                        <p>Tarian adat Suku Asmat dari Agats yang sudah ada sebelum kemerdekaan — hentakan kaki, tanah,
+                            dan teriakan penuh semangat juang mempertahankan wilayah.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 2. Tari Perang - Suku Dani -->
+                <div class="gallery-item" data-category="dance"
+                    onclick="openModal('Tari Tradisional','Tari Perang (Suku Dani)','assets/images/suku_dani.jpg',
+                    'Suku Dani menggunakan Tari Perang bersama dengan suku Asmat sebagai simbol kesiapan dalam mempertahankan wilayah kekuasaan dan menjaga kehormatan suku. Tarian ini memiliki karakteristik gerakan dasar yang berfokus pada kekuatan kaki, aksi menghentak tanah, serta iringan teriakan khas yang mencerminkan berkobarnya semangat perjuangan.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/suku_dani.jpg" alt="Tari Perang Suku Dani">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Tari Tradisional</span>
+                        <h4>Tari Perang</h4>
+                        <p>Tari Perang Suku Dani — simbol kesiapan mempertahankan wilayah dengan hentakan kaki kuat,
+                            hentak tanah, dan teriakan berapi-api khas pegunungan Papua.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 3. Tari Tup & Waisak - Suku Amungme -->
+                <div class="gallery-item" data-category="dance"
+                    onclick="openModal('Tari Tradisional','Tari Tup &amp; Waisak (Suku Amungme)','assets/images/tari_tub    _amungme.jpg',
+                    'Tarian tradisional dari Suku Amungme di antaranya adalah Tari Tup yang bisa ditarikan di lapangan maupun dalam rumah, dan Tari Waisak yang khusus ditampilkan di lapangan terbuka. Pertunjukannya dilakukan di panggung atau lapangan terbuka dengan membawa properti unik berbentuk ikan berwarna hitam putih. Penarinya menggunakan rok rumbai tradisional yang khas.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/tari_tub_amungme.jpg" alt="Tari Tup Suku Amungme">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Tari Tradisional</span>
+                        <h4>Tari Tup & Waisak</h4>
+                        <p>Dua tarian Suku Amungme — Tari Tup (dalam ruang atau lapangan) dan Tari Waisak (lapangan
+                            terbuka), dengan properti ikan hitam putih dan rok rumbai.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 4. Tari Seka - Suku Kamoro -->
+                <div class="gallery-item" data-category="dance"
+                    onclick="openModal('Tari Tradisional','Tari Seka (Suku Kamoro)','assets/images/tari_seka_kamoro.jpg',
+                    'Tari Seka merupakan tarian adat pergaulan yang melambangkan kebersamaan masyarakat Suku Kamoro. Tarian ini dibawakan oleh sekelompok penari pria dan wanita yang berbaris rapi saling berhadapan di jalanan tanah. Tubuh dan wajah penari dipenuhi coretan adat (body painting) serta pakaian adat berupa rok rumbai dan hiasan kepala yang khas.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/tari_seka_kamoro.jpg" alt="Tari Seka Suku Kamoro">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Tari Tradisional</span>
+                        <h4>Tari Seka</h4>
+                        <p>Tarian pergaulan Suku Kamoro — penari pria dan wanita berbaris berhadapan dengan body
+                            painting adat, rok rumbai, dan hiasan kepala yang memukau.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 5. Tari Wor / Yosim Pancar - Suku Biak -->
+                <div class="gallery-item" data-category="dance"
+                    onclick="openModal('Tari Tradisional','Tari Wor &amp; Yosim Pancar (Suku Biak)','assets/images/tari_wor_sukubiak.jpg',
+                    'Tarian dari Suku Biak mencakup Tari Wor yang bernilai sakral dan Tari Yosim Pancar yang bermakna kegembiraan. Dibawakan oleh para pemuda adat di lapangan terbuka, ciri khas busananya menggunakan pakaian adat berupa cawat bermotif khas (cidako), rumbai-rumbai, dan hiasan kepala dari bulu burung. Tarian ini dimainkan sambil menabuh alat musik tradisional Tifa.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/tari_wor_sukubiak.jpg" alt="Tari Wor Suku Biak">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Tari Tradisional</span>
+                        <h4>Tari Wor & Yosim Pancar</h4>
+                        <p>Dua tarian Suku Biak — Tari Wor yang sakral dan Yosim Pancar yang riang, ditampilkan dengan
+                            cawat cidako, rumbai, hiasan bulu, dan iringan Tifa.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 6. Tari Adat Perahu - Suku Sentani -->
+                <div class="gallery-item" data-category="dance"
+                    onclick="openModal('Tari Tradisional','Tari Adat Perahu (Suku Sentani)','assets/images/tari_adat_sentani.jpg',
+                    'Tarian massal Suku Sentani yang sangat unik karena dilakukan di atas perahu besar (kaji) yang dihias dengan janur di atas perairan Danau Sentani. Tarian ini ditarikan secara berkelompok dengan pakaian adat bernuansa hijau-kuning lengkap dengan hiasan kepala, seraya membawa busur panah dan alat musik Tifa sebagai simbol penghormatan atau perayaan adat.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/tari_adat_sentani.jpg" alt="Tari Adat Perahu Sentani">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Tari Tradisional</span>
+                        <h4>Tari Adat Perahu</h4>
+                        <p>Tarian massal unik Suku Sentani — ditarikan di atas perahu (kaji) berhias janur di Danau
+                            Sentani, dengan busur panah dan Tifa sebagai simbol perayaan adat.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- ===== HARI BESAR ===== -->
+
+                <!-- 1. Hari Besar Suku Asmat -->
+                <div class="festival-article" data-category="festival">
+                    <div class="festival-article-header">
+                        <div class="festival-article-icon">🪘</div>
+                        <div class="festival-article-meta">
+                            <span class="gallery-item-tag">Hari Besar</span>
+                            <h4>Upacara Adat Suku Asmat</h4>
+                        </div>
+                    </div>
+                    <ul class="festival-upacara-list">
+                        <li>
+                            <span class="upacara-dot"></span>
+                            <div class="upacara-content">
+                                <strong>Upacara Bis</strong>
+                                <p>Untuk menghormati roh leluhur dan meminta perlindungan mereka. Upacara ini diiringi
+                                    dengan tarian dan nyanyian tradisional serta penyajian makanan dan minuman khas
+                                    adat.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="upacara-dot"></span>
+                            <div class="upacara-content">
+                                <strong>Upacara Mbismu</strong>
+                                <p>Untuk mengantarkan roh orang yang meninggal ke alam baka. Upacara ini diiringi dengan
+                                    ukiran patung Mbis yang melambangkan roh orang yang telah tiada.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="upacara-dot"></span>
+                            <div class="upacara-content">
+                                <strong>Upacara Tyimbu</strong>
+                                <p>Untuk merayakan panen sagu, diiringi dengan tarian dan nyanyian tradisional serta
+                                    penyajian makanan dan minuman sebagai ungkapan syukur atas hasil bumi.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="upacara-dot"></span>
+                            <div class="upacara-content">
+                                <strong>Upacara Yentpokmbu</strong>
+                                <p>Untuk menginisiasi anak laki-laki menjadi laki-laki dewasa. Diiringi dengan ritual
+                                    dan berbagai tes yang wajib dilewati oleh setiap anak laki-laki suku.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 2. Hari Besar Suku Dani -->
+                <div class="festival-article" data-category="festival">
+                    <div class="festival-article-header">
+                        <div class="festival-article-icon">🔥</div>
+                        <div class="festival-article-meta">
+                            <span class="gallery-item-tag">Hari Besar</span>
+                            <h4>Upacara Adat Suku Dani</h4>
+                        </div>
+                    </div>
+                    <ul class="festival-upacara-list">
+                        <li>
+                            <span class="upacara-dot"></span>
+                            <div class="upacara-content">
+                                <strong>Upacara Bakar Batu</strong>
+                                <p>Digelar untuk menyambut tamu, merayakan kelahiran, atau memperingati peristiwa
+                                    penting. Batu dibakar hingga membara lalu diletakkan dalam lubang tanah bersama ubi,
+                                    daging babi, dan sayuran. Seluruh warga berkumpul menikmati hidangan bersama.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="upacara-dot"></span>
+                            <div class="upacara-content">
+                                <strong>Tradisi Potong Jari</strong>
+                                <p>Simbol duka dan bentuk cinta terhadap orang yang meninggal, dilakukan oleh perempuan
+                                    yang kehilangan anggota keluarga terdekat. Meskipun kini sudah jarang dilakukan,
+                                    nilainya tetap dihormati sebagai identitas Suku Dani.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 3. Hari Besar Suku Amungme -->
+                <div class="festival-article" data-category="festival">
+                    <div class="festival-article-header">
+                        <div class="festival-article-icon">👜</div>
+                        <div class="festival-article-meta">
+                            <span class="gallery-item-tag">Hari Besar</span>
+                            <h4>Tradisi Adat Suku Amungme</h4>
+                        </div>
+                    </div>
+                    <ul class="festival-upacara-list">
+                        <li>
+                            <span class="upacara-dot"></span>
+                            <div class="upacara-content">
+                                <strong>Tradisi Noken</strong>
+                                <p>Simbol perlindungan dan ekonomi masyarakat Suku Amungme. Dalam kondisi apapun, warga
+                                    selalu menggunakan noken (tas khas Papua) — hanya dilepas saat tidur. Noken
+                                    digunakan untuk membawa hasil bumi sehingga dilambangkan sebagai simbol ekonomi dan
+                                    kehidupan sehari-hari.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 4. Hari Besar Suku Kamoro -->
+                <div class="festival-article" data-category="festival">
+                    <div class="festival-article-header">
+                        <div class="festival-article-icon">👑</div>
+                        <div class="festival-article-meta">
+                            <span class="gallery-item-tag">Hari Besar</span>
+                            <h4>Upacara Adat Suku Kamoro</h4>
+                        </div>
+                    </div>
+                    <ul class="festival-upacara-list">
+                        <li>
+                            <span class="upacara-dot"></span>
+                            <div class="upacara-content">
+                                <strong>Taparo</strong>
+                                <p>Musyawarah adat untuk memilih calon Weyaiku (pemimpin suku). Penilaian mencakup
+                                    karakter seseorang sejak kecil hingga dewasa, bukan sekadar keputusan sepihak,
+                                    melainkan hasil pertimbangan menyeluruh seluruh warga suku.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="upacara-dot"></span>
+                            <div class="upacara-content">
+                                <strong>Upacara Penobatan Weyaiku</strong>
+                                <p>Penobatan pemimpin suku yang memerlukan keladi khusus yang ditanam jauh hari
+                                    sebelumnya. Upacara dilaksanakan di tempat terbuka dan disaksikan oleh seluruh
+                                    masyarakat sebagai bentuk pengakuan resmi.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 5. Hari Besar Suku Biak -->
+                <div class="festival-article" data-category="festival">
+                    <div class="festival-article-header">
+                        <div class="festival-article-icon">🌊</div>
+                        <div class="festival-article-meta">
+                            <span class="gallery-item-tag">Hari Besar</span>
+                            <h4>Upacara Adat Suku Biak</h4>
+                        </div>
+                    </div>
+                    <ul class="festival-upacara-list">
+                        <li>
+                            <span class="upacara-dot"></span>
+                            <div class="upacara-content">
+                                <strong>Upacara Wor</strong>
+                                <p>Digelar untuk menghormati roh leluhur, merayakan panen, dan menyambut tamu penting.
+                                    Selama upacara berlangsung, masyarakat menari, menyanyi, dan memainkan musik bambu
+                                    khas Biak yang disebut Tifa. Gerakan tari mencerminkan kehidupan laut, keberanian,
+                                    kegembiraan, dan rasa hormat kepada alam semesta.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 6. Hari Besar Suku Sentani -->
+                <div class="festival-article" data-category="festival">
+                    <div class="festival-article-header">
+                        <div class="festival-article-icon">🚣</div>
+                        <div class="festival-article-meta">
+                            <span class="gallery-item-tag">Hari Besar</span>
+                            <h4>Upacara Adat Suku Sentani</h4>
+                        </div>
+                    </div>
+                    <ul class="festival-upacara-list">
+                        <li>
+                            <span class="upacara-dot"></span>
+                            <div class="upacara-content">
+                                <strong>Festival Danau Sentani</strong>
+                                <p>Festival pariwisata tahunan yang diisi berbagai kegiatan budaya: tarian adat di atas
+                                    perahu, tarian perang khas Papua, upacara adat penobatan Ondoafi, serta pameran
+                                    kuliner khas Papua yang meriah dan berkesan.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="upacara-dot"></span>
+                            <div class="upacara-content">
+                                <strong>Upacara Khulu</strong>
+                                <p>Pengantaran harta benda adat sebagai bentuk penghormatan terakhir bagi seseorang yang
+                                    wafat dan memiliki kedudukan terhormat. Prosesi melibatkan penyerahan harta adat
+                                    bernilai tinggi seperti kapak batu (tomako batu) dan manik-manik yang dibawa oleh
+                                    keluarga terdekat.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- ===== ALAT MUSIK ===== -->
+
+                <!-- Tifa -->
+                <div class="gallery-item" data-category="music"
+                    onclick="openModal('Alat Musik','Tifa','assets/images/tifa.jpg',
+                    'Tifa adalah alat musik pukul khas Papua dan Maluku, berbentuk seperti tabung panjang dari kayu dan kulit binatang. Tifa digunakan dalam berbagai upacara adat, penyambutan tamu, tarian perang, dan ritual keagamaan. Setiap suku memiliki variasi Tifa yang berbeda dalam ukuran, motif ukiran, dan cara memukul. Suaranya yang berdentum kuat mampu menggetarkan jiwa dan membangkitkan semangat.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/tifa.jpg" alt="Tifa">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Alat Musik</span>
+                        <h4>Tifa</h4>
+                        <p>Alat musik pukul ikonik Papua dari kayu dan kulit binatang, digunakan dalam upacara adat dan
+                            tarian tradisional.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 11. Amyem -->
+                <div class="gallery-item" data-category="music"
+                    onclick="openModal('Alat Musik','Amyem','assets/images/amyem.jpg',
+                    'Amyem adalah salah satu alat musik sejenis trumpet yang berbentuk seperti seruling atau suling. Alat musik ini terbuat dari kayu putih dan biasanya digunakan untuk mengiringi tarian daerah. Amyem banyak digunakan oleh masyarakat Suku Web yang berada di Kabupaten Keerom, Papua.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/amyem.jpg" alt="Amyem">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Alat Musik</span>
+                        <h4>Amyem</h4>
+                        <p>Alat musik tiup sejenis trompet dari kayu putih milik Suku Web di Kabupaten Keerom, biasa
+                            mengiringi tarian daerah Papua.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 12. Atowo -->
+                <div class="gallery-item" data-category="music"
+                    onclick="openModal('Alat Musik','Atowo','assets/images/atowo.jpg',
+                    'Atowo adalah alat musik Papua berbentuk bulat panjang, berukuran kecil, dan ringan. Cara menggunakannya adalah satu tangan memegang badan atowo dan satu tangan lainnya digunakan untuk menabuh atowo. Atowo ditabuh dengan teknik tertentu agar terdengar irama yang indah. Biasanya, atowo digunakan sebagai hiburan rakyat.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/atowo.jpg" alt="Atowo">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Alat Musik</span>
+                        <h4>Atowo</h4>
+                        <p>Alat musik tabuh Papua berbentuk bulat panjang, ringan, dan kecil — dimainkan satu tangan
+                            menabuh dengan teknik khusus sebagai hiburan rakyat.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 13. Butshake -->
+                <div class="gallery-item" data-category="music"
+                    onclick="openModal('Alat Musik','Butshake','assets/images/butshake.jpg',
+                    'Butshake adalah alat musik Papua yang terbuat dari bambu dan buah kenari. Butshake ditengarai berasal dari daerah Muyu, Kabupaten Merauke. Cara memainkan alat musik ini adalah dengan mengayunkan atau mengocok alat ini menggunakan tangan. Ayunan terhadap alat musik ini membuat buah kenari yang berada di dalam bambu menjadi saling bertumbukan dan menimbulkan suara. Butshake kerap digunakan untuk mengiringi tarian adat.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/butshake.jpg" alt="Butshake">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Alat Musik</span>
+                        <h4>Butshake</h4>
+                        <p>Alat musik rattle dari bambu berisi buah kenari asal Muyu, Merauke — digoyang hingga buah
+                            kenari saling bertumbuk menghasilkan irama tarian adat.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 14. Fuu -->
+                <div class="gallery-item" data-category="music"
+                    onclick="openModal('Alat Musik','Fuu','assets/images/fuu.jpg',
+                    'Fuu merupakan alat musik tiup khas Papua yang terbuat dari kayu dan bambu. Oleh masyarakat Suku Asmat yang berada di Kabupaten Merauke, Papua, alat musik ini biasa digunakan sebagai alat bunyi untuk memanggil penduduk atau untuk mengiringi tarian daerah.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/fuu.jpg" alt="Fuu">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Alat Musik</span>
+                        <h4>Fuu</h4>
+                        <p>Alat musik tiup dari kayu dan bambu khas Suku Asmat Merauke — berfungsi memanggil penduduk
+                            dan mengiringi tarian daerah Papua.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 15. Kecapi Mulut -->
+                <div class="gallery-item" data-category="music"
+                    onclick="openModal('Alat Musik','Kecapi Mulut','assets/images/kecapi_mulut.jpg',
+                    'Kecapi Mulut adalah alat musik Papua yang terbuat dari bambu wulu, berasal dari Suku Dani. Memainkan kecapi mulut memerlukan teknik khusus yakni dengan dijepit di antara bibir kemudian ditiup sambil menarik talinya. Suara yang dihasilkan melalui kecapi mulut tidaklah terlalu keras. Alat musik kecapi mulut biasanya ditujukan untuk hiburan saja.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/kecapi_mulut.jpg" alt="Kecapi Mulut">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Alat Musik</span>
+                        <h4>Kecapi Mulut</h4>
+                        <p>Alat musik dari bambu wulu Suku Dani — dijepit di bibir lalu ditiup sambil menarik tali,
+                            menghasilkan nada lembut untuk hiburan.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 16. Krombi -->
+                <div class="gallery-item" data-category="music"
+                    onclick="openModal('Alat Musik','Krombi','assets/images/krombi.jpg',
+                    'Krombi adalah alat musik Papua yang biasa digunakan oleh masyarakat Suku Tehit yang berada di Kabupaten Sorong Selatan sebagai musik pengiring tari-tarian pada acara atau upacara adat masyarakat setempat. Cara memainkan krombi adalah dengan cara dipukul menggunakan sebuah kayu kecil.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/krombi.jpg" alt="Krombi">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Alat Musik</span>
+                        <h4>Krombi</h4>
+                        <p>Alat musik pukul Suku Tehit dari Sorong Selatan — dimainkan dengan kayu kecil untuk
+                            mengiringi tari-tarian dalam upacara adat.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 17. Pikon -->
+                <div class="gallery-item" data-category="music"
+                    onclick="openModal('Alat Musik','Pikon','assets/images/pikon.jpg',
+                    'Pikon adalah alat musik Papua yang kerap dimainkan oleh masyarakat Suku Dani. Suara yang dihasilkan dari alat musik ini sangatlah sumbang. Alat musik pikon digunakan sebagai sarana untuk menghibur diri dan mengisi waktu luang setelah bekerja seharian.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/pikon.jpg" alt="Pikon">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Alat Musik</span>
+                        <h4>Pikon</h4>
+                        <p>Alat musik Suku Dani dengan suara khas yang sumbang — digunakan untuk menghibur diri dan
+                            mengisi waktu luang setelah bekerja seharian.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 18. Triton -->
+                <div class="gallery-item" data-category="music"
+                    onclick="openModal('Alat Musik','Triton','assets/images/triton.jpg',
+                    'Triton adalah alat musik tradisional Papua yang terbuat dari keong atau kerang besar. Dulu, triton digunakan sebagai sarana komunikasi bagi masyarakat setempat sekaligus untuk memanggil bantuan jika ada anggota masyarakat yang terkena masalah atau bahaya. Namun, seiring dengan perkembangan zaman, alat musik triton kini hanya digunakan sebagai hiburan saja.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/triton.jpg" alt="Triton">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Alat Musik</span>
+                        <h4>Triton</h4>
+                        <p>Alat musik tiup dari kerang besar Papua — dahulu sebagai sinyal komunikasi dan panggilan
+                            darurat antar warga, kini menjadi hiburan tradisional.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+
+                <!-- 20. Yi -->
+                <div class="gallery-item" data-category="music"
+                    onclick="openModal('Alat Musik','Yi','assets/images/yi.jpg',
+                    'Yi terbuat dari kayu dan bambu. Di masa lalu, alat musik yi digunakan untuk memanggil penduduk serta mengiringi berbagai macam tarian daerah. Suara yang dihasilkan alat musik ini sangat unik, bentuknya gempal, dan berwarna coklat gelap. Namun, alat musik yi kini semakin sulit untuk ditemukan.')">
+                    <div class="gallery-img-wrapper ">
+                        <img src="assets/images/yi.jpg" alt="Yi">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Alat Musik</span>
+                        <h4>Yi</h4>
+                        <p>Alat musik dari kayu dan bambu berbentuk gempal coklat gelap — suaranya sangat unik, kini
+                            semakin langka dan sulit ditemukan.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- ===== WISATA ===== -->
+
+                <!-- 1. Raja Ampat -->
+                <div class="gallery-item" data-category="tourism"
+                    onclick="openModal('Destinasi Wisata','Raja Ampat','assets/images/raja_ampat.jpg',
+                    'Raja Ampat merupakan destinasi wisata dunia di Papua yang memukau lewat kumpulan pulau besar dan kecil, dengan empat pulau utama: Waigeo, Misool, Salawati, dan Batanta. Kawasan ini sangat terkenal dengan kekayaan bawah lautnya yang dihuni oleh penyu laut serta sekitar 1.511 spesies ikan. Bagi para pelancong yang ingin menyelam dengan kondisi cuaca terbaik dan visibilitas air laut sangat jernih, waktu kunjungan ideal adalah bulan Oktober dan November.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/raja_ampat.jpg" alt="Raja Ampat">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Wisata</span>
+                        <h4>Raja Ampat</h4>
+                        <p>Surga bawah laut Papua dengan 1.511 spesies ikan dan 4 pulau utama — destinasi diving kelas
+                            dunia terbaik dikunjungi Oktober–November.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 2. Danau Sentani -->
+                <div class="gallery-item" data-category="tourism"
+                    onclick="openModal('Destinasi Wisata','Danau Sentani','assets/images/danau_sentani.jpg',
+                    'Sebagai danau terbesar di Papua yang terletak di ketinggian 75 meter di atas permukaan laut, Danau Sentani menyuguhkan panorama alam menakjubkan yang dikelilingi sekitar 21 pulau. Pengunjung dapat menikmati berbagai aktivitas seperti berenang, memancing, berkeliling menggunakan perahu sewaan, hingga mencicipi kuliner lokal. Berinteraksi langsung dengan penduduk setempat juga menjadi pengalaman berharga yang tidak boleh dilewatkan.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/danau_sentani.jpg" alt="Danau Sentani">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Wisata</span>
+                        <h4>Danau Sentani</h4>
+                        <p>Danau terbesar Papua di ketinggian 75 mdpl, dikelilingi 21 pulau — nikmati berenang,
+                            memancing, berperahu, dan kuliner lokal yang khas.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 3. Pulau Biak -->
+                <div class="gallery-item" data-category="tourism"
+                    onclick="openModal('Destinasi Wisata','Pulau Biak','assets/images/pulau_biak.jpg',
+                    'Pulau Biak yang berada di Teluk Cenderawasih membentuk Kabupaten Biak bersama Pulau Numfor dan menyimpan ragam destinasi menarik seperti Kampung Amoi di Biak Utara serta Museum Cenderawasih yang mengoleksi peninggalan Perang Dunia II. Wisatawan juga dapat mencicipi kuliner khas Singkong Marapen, mengunjungi Pantai Bosnik dan Air Terjun Wafsarak, atau melihat koleksi flora dan fauna di Taman Burung dan Taman Anggrek daerah Bosnik.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/pulau_biak.jpg" alt="Pulau Biak">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Wisata</span>
+                        <h4>Pulau Biak</h4>
+                        <p>Pulau di Teluk Cenderawasih dengan Museum PD II, Pantai Bosnik, Air Terjun Wafsarak, Taman
+                            Burung, dan kuliner khas Singkong Marapen.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 4. Taman Nasional Lorentz -->
+                <div class="gallery-item" data-category="tourism"
+                    onclick="openModal('Destinasi Wisata','Taman Nasional Lorentz','assets/images/taman_nasional_lorentz.jpg',
+                    'Taman Nasional Lorentz merupakan kawasan konservasi terbesar dengan ekosistem terlengkap di Asia Pasifik dan taman nasional terbesar di Asia Tenggara yang telah diakui sebagai situs warisan dunia oleh UNESCO. Memiliki luas 2.505.600 hektare yang membentang di 10 kabupaten, taman ini dapat diakses melalui Timika, Wamena, dan Enarotali. Di dalamnya, pengunjung dapat menjumpai puyuh salju, kanguru pohon dingiso, dan cendrawasih ekor panjang.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/taman_nasional_lorentz.jpg" alt="Taman Nasional Lorentz">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Wisata</span>
+                        <h4>Taman Nasional Lorentz</h4>
+                        <p>TN terbesar di Asia Tenggara & warisan UNESCO — 2,5 juta hektare habitat puyuh salju, kanguru
+                            dingiso, dan cendrawasih ekor panjang.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 5. Lembah Baliem -->
+                <div class="gallery-item" data-category="tourism"
+                    onclick="openModal('Destinasi Wisata','Lembah Baliem','assets/images/lembah_baliem.jpg',
+                    'Terletak di sekitar Pegunungan Jayawijaya, Lembah Baliem menjadi tempat tinggal bagi suku Dani, Yali, dan Lani yang masih mempertahankan gaya hidup tradisional seperti mengenakan koteka dan rok rumbai di tengah peradaban mirip zaman batu. Setiap bulan Agustus, lembah ini menyelenggarakan Festival Lembah Baliem selama tiga hari yang menampilkan atraksi budaya, lomba karapan babi antar desa, serta pesta babi bakar.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/lembah_baliem.jpg" alt="Lembah Baliem">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Wisata</span>
+                        <h4>Lembah Baliem</h4>
+                        <p>Lembah budaya suku Dani, Yali, Lani di Jayawijaya — setiap Agustus menjadi tuan rumah
+                            Festival Lembah Baliem dengan karapan babi dan pesta adat.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 6. Air Terjun Wafsarak -->
+                <div class="gallery-item" data-category="tourism"
+                    onclick="openModal('Destinasi Wisata','Air Terjun Wafsarak','assets/images/air_terjun_wafsarak.jpg',
+                    'Air Terjun Wafsarak yang terletak di Biak Utara, Papua Barat, adalah destinasi wisata setinggi 10 meter yang menawarkan keindahan tersembunyi dan suasana alami di tengah hutan. Akses menuju lokasi ini sangat mudah — suara gemericik airnya sudah terdengar dari pinggir jalan. Kolam di bawahnya berair sangat jernih dan aman untuk berenang maupun bermain air bersama anak-anak, menjadikannya rekomendasi liburan keluarga yang ideal.')">
+                    <div class="gallery-img-wrapper ">
+                        <img src="assets/images/air_terjun_wafsarak.jpg" alt="Air Terjun Wafsarak">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Wisata</span>
+                        <h4>Air Terjun Wafsarak</h4>
+                        <p>Air terjun 10 meter di Biak Utara dengan kolam jernih di bawahnya — mudah diakses, aman untuk
+                            keluarga dan anak-anak bermain air.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 7. Taman Nasional Teluk Cendrawasih -->
+                <div class="gallery-item" data-category="tourism"
+                    onclick="openModal('Destinasi Wisata','Taman Nasional Teluk Cendrawasih','assets/images/teluk_cenderawasih.jpg',
+                    'Didominasi wilayah perairan, Taman Nasional Teluk Cenderawasih memegang predikat kawasan konservasi laut terbesar di Indonesia dan menjadi surga bagi pencinta diving. Penyelam akan disuguhi ratusan jenis moluska dan ikan, serta berkesempatan bertemu kura-kura, penyu, hiu, dan lumba-lumba. Selain pesona bawah laut, wisatawan juga dapat menjelajahi Pulau Mioswaar yang memiliki gua dengan sumber air panas berkandungan belerang.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/teluk_cenderawasih.jpg" alt="Teluk Cendrawasih">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Wisata</span>
+                        <h4>TN Teluk Cendrawasih</h4>
+                        <p>Konservasi laut terbesar Indonesia — surga diving dengan penyu, hiu, lumba-lumba, dan Pulau
+                            Mioswaar yang punya gua air panas belerang.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 8. Taman Nasional Wasur -->
+                <div class="gallery-item" data-category="tourism"
+                    onclick="openModal('Destinasi Wisata','Taman Nasional Wasur','assets/images/wasur.jpg',
+                    'Terletak di Kabupaten Merauke dengan luas 413.810 hektare, Taman Nasional Wasur menyuguhkan petualangan menakjubkan karena menyimpan hutan sabana terbesar di Indonesia bahkan di Asia. Tempat ini merupakan habitat kekayaan flora dan fauna khas Papua, di mana sebagian besar hewannya merupakan spesies migran yang hidup tersebar di enam ekosistem berbeda. Berkunjung ke sini menjadi keharusan untuk melihat langsung fauna unik seperti burung kasuari.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/wasur.jpg" alt="Taman Nasional Wasur">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Wisata</span>
+                        <h4>Taman Nasional Wasur</h4>
+                        <p>Hutan sabana terbesar Asia di Merauke — habitat 6 ekosistem berbeda dengan fauna migran khas
+                            Papua termasuk burung kasuari yang ikonik.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+
+                <!-- ===== MAKANAN KHAS ===== -->
+
+                <!-- 11. Tepung Sagu -->
+                <div class="gallery-item" data-category="food"
+                    onclick="openModal('Makanan Khas','Tepung Sagu','assets/images/tepung_sagu.jpg',
+                    'Sagu merupakan bahan pangan tradisional khas Papua dan Ambon yang dibuat dari teras batang pohon rumbia. Tepung sagu memiliki manfaat seperti mencegah penyakit lambung, aman untuk penderita diabetes, mengenyangkan lebih lama, dan baik untuk pertumbuhan anak. Sagu dapat diolah menjadi papeda, sagu lempeng, sagu bakar, hingga produk olahan seperti roti, mie, soun, kerupuk, dan sirup.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/tepung_sagu.jpg" alt="Tepung Sagu">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Makanan Khas</span>
+                        <h4>Tepung Sagu</h4>
+                        <p>Bahan pangan pokok dari teras batang pohon rumbia — bebas gluten, aman bagi penderita
+                            diabetes, dan sumber karbohidrat tahan lama.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 12. Papeda -->
+                <div class="gallery-item" data-category="food"
+                    onclick="openModal('Makanan Khas','Papeda','assets/images/papeda.jpg',
+                    'Papeda adalah makanan pokok masyarakat pesisir Papua yang terbuat dari tepung sagu. Teksturnya kental, lengket, dan warnanya bening keputihan. Cara memakannya pun unik, gunakan sepasang sumpit bambu, lalu menggulung papeda sebelum dipindahkan ke piring agar tidak putus.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/papeda.jpg" alt="Papeda">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Makanan Khas</span>
+                        <h4>Papeda</h4>
+                        <p>Makanan pokok pesisir Papua dari sagu — tekstur kental bening, disantap unik dengan sumpit
+                            bambu yang menggulung sebelum ke piring.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 13. Sagu Lempeng -->
+                <div class="gallery-item" data-category="food"
+                    onclick="openModal('Makanan Khas','Sagu Lempeng','assets/images/sagu_lempeng.jpg',
+                    'Sagu lempeng dibuat dengan cara dicetak di dalam besi panas hingga menjadi lempengan yang berwarna kecokelatan. Tekstur awalnya memang terbilang cukup keras, sehingga cara terbaik untuk menikmatinya adalah dengan mencelupkannya perlahan ke dalam teh manis atau kopi panas agar menjadi lebih lunak. Sensasi rasanya tawar namun gurih.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/sagu_lempeng.jpg" alt="Sagu Lempeng">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Makanan Khas</span>
+                        <h4>Sagu Lempeng</h4>
+                        <p>Lempengan sagu cetak berwarna kecokelatan bertekstur keras — paling nikmat dicelup ke teh
+                            manis atau kopi panas hingga lunak dan gurih.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 14. Ulat Sagu -->
+                <div class="gallery-item" data-category="food"
+                    onclick="openModal('Makanan Khas','Ulat Sagu','assets/images/ulat_sagu.jpg',
+                    'Sate ulat sagu merupakan hidangan tradisional yang sangat digemari warga lokal. Ulat ini diambil langsung dari bagian dalam batang pohon sagu yang sudah tua dan lapuk. Meskipun bagi sebagian orang tampilannya terlihat menggelikan, ulat sagu ternyata menyimpan kandungan protein yang sangat tinggi. Rasanya pun creamy dan kenyal ketika dikunyah.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/ulat_sagu.jpg" alt="Ulat Sagu">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Makanan Khas</span>
+                        <h4>Ulat Sagu</h4>
+                        <p>Hidangan sate dari larva batang pohon sagu tua — kaya protein, bertekstur creamy dan kenyal,
+                            kuliner eksoktis favorit warga lokal Papua.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 15. Udang Selingkuh -->
+                <div class="gallery-item" data-category="food"
+                    onclick="openModal('Makanan Khas','Udang Selingkuh','assets/images/udang_selingkuh.jpg',
+                    'Hidangan lauk dari Sungai Baliem ini memiliki bentuk tubuh seperti udang pada umumnya, tetapi mempunyai capit yang sangat besar layaknya seekor kepiting. Daging udang selingkuh bertekstur padat, berserat lembut, dan manis. Biasanya hidangan ini disajikan dengan bumbu saus pedas, asam manis, atau sekadar dibakar.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/udang_selingkuh.jpg" alt="Udang Selingkuh">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Makanan Khas</span>
+                        <h4>Udang Selingkuh</h4>
+                        <p>Udang bercapit besar dari Sungai Baliem — dagingnya padat, lembut, dan manis, disajikan
+                            dengan saus pedas atau asam manis yang segar.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 16. Ikan Bakar Manokwari -->
+                <div class="gallery-item" data-category="food"
+                    onclick="openModal('Makanan Khas','Ikan Bakar Manokwari','assets/images/ikan_bakar_manokwari.jpg',
+                    'Ikan bakar Manokwari biasanya menggunakan ikan tongkol segar yang dibakar dengan bumbu rempah khusus. Ikan ini disajikan dengan siraman sambal tumbuk kasar yang pedas dan menyegarkan karena diberi tambahan perasan jeruk nipis.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/ikan_bakar_manokwari.jpg" alt="Ikan Bakar Manokwari">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Makanan Khas</span>
+                        <h4>Ikan Bakar Manokwari</h4>
+                        <p>Ikan tongkol segar dibakar dengan bumbu rempah khas, disiram sambal tumbuk pedas segar yang
+                            dipadu perasan jeruk nipis.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 17. Ikan Bungkus -->
+                <div class="gallery-item" data-category="food"
+                    onclick="openModal('Makanan Khas','Ikan Bungkus','assets/images/ikan_bungkus.jpg',
+                    'Masyarakat Papua justru lebih sering menggunakan daun talas sebagai pembungkus utamanya, bukan daun pisang. Bumbu kuning yang meresap hingga ke bagian tulang ditambah aroma khas dari daun talas membuat hidangan ini terasa sangat autentik dan pastinya menggugah selera makan.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/ikan_bungkus.jpg" alt="Ikan Bungkus">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Makanan Khas</span>
+                        <h4>Ikan Bungkus</h4>
+                        <p>Ikan dibungkus daun talas dengan bumbu kuning yang meresap hingga tulang — aroma daun talas
+                            memberi cita rasa autentik yang menggugah selera.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 18. Kue Lontar -->
+                <div class="gallery-item" data-category="food"
+                    onclick="openModal('Makanan Khas','Kue Lontar','assets/images/kue_lontar.jpg',
+                    'Konon, kue ini dibawa oleh orang Belanda di masa lampau yang menyebutnya ronde taart, lalu masyarakat setempat melafalkannya menjadi kue lontar. Pinggirannya terasa renyah, sementara bagian tengahnya sangat lembut dan langsung meleleh di dalam mulut.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/kue_lontar.jpg" alt="Kue Lontar">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Makanan Khas</span>
+                        <h4>Kue Lontar</h4>
+                        <p>Kue warisan Belanda (ronde taart) — pinggiran renyah dengan bagian tengah super lembut yang
+                            langsung meleleh di mulut.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 19. Keripik Keladi -->
+                <div class="gallery-item" data-category="food"
+                    onclick="openModal('Makanan Khas','Keripik Keladi','assets/images/keripik_keladi.jpg',
+                    'Keripik keladi adalah camilan populer berbahan dasar umbi keladi khas pesisir yang diiris tipis dan digoreng hingga teksturnya sangat renyah. Keripik keladi sudah banyak dimodifikasi dengan berbagai varian bumbu, seperti rasa pedas manis, balado, hingga sapi panggang.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/keripik_keladi.jpg" alt="Keripik Keladi">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Makanan Khas</span>
+                        <h4>Keripik Keladi</h4>
+                        <p>Camilan renyah dari irisan tipis umbi keladi khas pesisir Papua — hadir dalam aneka varian
+                            bumbu pedas manis, balado, hingga sapi panggang.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+                <!-- 20. Aunu Saebre -->
+                <div class="gallery-item" data-category="food"
+                    onclick="openModal('Makanan Khas','Aunu Saebre','assets/images/aunu_saebre.jpg',
+                    'Aunu senebre merupakan perpaduan antara ikan teri nasi dan irisan daun talas yang dicampur menjadi satu bumbu. Teksturnya cenderung kering dengan cita rasa yang sangat gurih.')">
+                    <div class="gallery-img-wrapper">
+                        <img src="assets/images/aunu_saebre.jpg" alt="Aunu Saebre">
+                    </div>
+                    <div class="gallery-card-info">
+                        <span class="gallery-item-tag">Makanan Khas</span>
+                        <h4>Aunu Saebre</h4>
+                        <p>Perpaduan ikan teri nasi dan irisan daun talas dalam satu bumbu — tekstur kering dengan cita
+                            rasa yang sangat gurih khas Papua.</p>
+                        <span class="gallery-read-more">Baca Selengkapnya <svg xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg></span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- MODAL DETAIL -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+        <div class="modal-box" id="modalBox">
+            <button class="modal-close" onclick="closeModal()" aria-label="Tutup">&times;</button>
+            <img id="modalImg" src="" alt="" class="modal-img" style="display:none;">
+            <div id="modalImgPlaceholder" class="modal-img-placeholder" style="display:none;"></div>
+            <div class="modal-body">
+                <span class="modal-tag" id="modalTag"></span>
+                <h2 class="modal-title" id="modalTitle"></h2>
+                <p class="modal-desc" id="modalDesc"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container footer-bottom">
+            <p>&copy; 2026 Saji Papua. Dibuat dengan dedikasi untuk melestarikan bahasa daerah Papua melalui pendekatan
+                <span>Etnik-Digital</span>.
+            </p>
+        </div>
+    </footer>
+
+    <!-- LOGIC SCRIPT -->
+    <script>
+        function toggleMenu() {
+            const navLinks = document.querySelector(".nav-links");
+            navLinks.classList.toggle("mobile-active");
+        }
+
+        // Sticky Navbar
+        window.addEventListener("scroll", () => {
+            const navbar = document.querySelector(".navbar");
+            if (window.scrollY > 50) {
+                navbar.classList.add("scrolled");
+            } else {
+                navbar.classList.remove("scrolled");
+            }
+        });
+
+        // Filter Category Logic
+        function filterCategory(btn, filterValue) {
+            document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+
+            const items = document.querySelectorAll(".gallery-item, .festival-article");
+            items.forEach((item, index) => {
+                const category = item.getAttribute("data-category");
+
+                item.style.opacity = "0";
+                item.style.transform = "scale(0.93) translateY(10px)";
+
+                setTimeout(() => {
+                    if (filterValue === "all" || category === filterValue) {
+                        item.classList.remove("hidden");
+                        void item.offsetWidth;
+                        setTimeout(() => {
+                            item.style.opacity = "1";
+                            item.style.transform = "scale(1) translateY(0)";
+                        }, index * 30);
+                    } else {
+                        item.classList.add("hidden");
+                    }
+                }, 150);
+            });
+        }
+
+        // Modal Logic
+        const placeholderGradients = {
+            dance: 'linear-gradient(135deg, #e05c45, #7a1f0a)',
+            festival: 'linear-gradient(135deg, #f7a11a, #9e4200)',
+            music: 'linear-gradient(135deg, #4e8a3a, #165000)',
+            tourism: 'linear-gradient(135deg, #1a7ab0, #023460)',
+            clothing: 'linear-gradient(135deg, #7b4fa0, #3a1060)',
+            food: 'linear-gradient(135deg, #d97e2a, #6b2c00)',
+        };
+        const placeholderEmojis = {
+            house: '🏠', clothing: '👘', dance: '💃',
+            festival: '🎉', music: '🥁', tourism: '🌿', food: '🍛'
+        };
+
+        function openModal(tag, title, imgSrc, desc) {
+            document.getElementById('modalTag').textContent = tag;
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalDesc').textContent = desc;
+
+            const modalImg = document.getElementById('modalImg');
+            const modalImgPh = document.getElementById('modalImgPlaceholder');
+
+            if (imgSrc) {
+                modalImg.src = imgSrc;
+                modalImg.alt = title;
+                modalImg.style.display = 'block';
+                modalImgPh.style.display = 'none';
+            } else {
+                modalImg.style.display = 'none';
+                // Pick a gradient based on tag
+                const tagLower = tag.toLowerCase();
+                let bg = 'linear-gradient(135deg, #c67f07, #5b3a00)';
+                if (tagLower.includes('tari')) bg = placeholderGradients.dance;
+                else if (tagLower.includes('besar')) bg = placeholderGradients.festival;
+                else if (tagLower.includes('musik')) bg = placeholderGradients.music;
+                else if (tagLower.includes('wisata')) bg = placeholderGradients.tourism;
+                else if (tagLower.includes('pakaian')) bg = placeholderGradients.clothing;
+                else if (tagLower.includes('makanan')) bg = placeholderGradients.food;
+                modalImgPh.style.background = bg;
+                modalImgPh.textContent = '🖼️';
+                modalImgPh.style.display = 'flex';
+            }
+
+            document.getElementById('modalOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function closeModalOutside(e) {
+            if (e.target === document.getElementById('modalOverlay')) closeModal();
+        }
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // Scroll reveal for gallery items
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, i) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }, i * 60);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.gallery-item').forEach(item => {
+            item.style.opacity = '0';
+            item.style.transform = 'translateY(20px)';
+            item.style.transition = 'opacity 0.5s ease, transform 0.5s cubic-bezier(0.16,1,0.3,1)';
+            observer.observe(item);
+        });
+
+        // URL Parameter handling for Chatbot Redirection
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const filter = urlParams.get('filter');
+            const openTitle = urlParams.get('open');
+
+            if (filter) {
+                const btn = document.getElementById('filter-' + filter);
+                if (btn) btn.click();
+            }
+
+            if (openTitle) {
+                setTimeout(() => {
+                    const items = document.querySelectorAll('.gallery-item, .festival-article');
+                    for (let item of items) {
+                        // If filter is applied, only check items matching the filter (or all if no filter)
+                        if (filter && item.getAttribute('data-category') !== filter && filter !== 'all') {
+                            continue;
+                        }
+
+                        const text = item.innerText.toLowerCase();
+                        if (text.includes(openTitle.toLowerCase())) {
+                            item.click();
+                            // Scroll to the item so it's in view
+                            item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            break;
+                        }
+                    }
+                }, 400); // Wait slightly longer for filter animation to apply
+            }
+        });
+    </script>
+</body>
+
+</html>

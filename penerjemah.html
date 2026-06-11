@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penerjemah & Otomata - Saji Papua</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <!-- NAVIGASI BAR -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo-section">
+                <!-- SVG Icon Logo Etnik-Digital -->
+                <svg class="logo-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="4"
+                        stroke-dasharray="10 6" />
+                    <path d="M50 15 L80 45 L50 75 L20 45 Z" fill="none" stroke="currentColor" stroke-width="3" />
+                    <circle cx="50" cy="45" r="8" fill="var(--highlight-red)" />
+                    <line x1="50" y1="15" x2="50" y2="75" stroke="currentColor" stroke-width="2" />
+                    <line x1="20" y1="45" x2="80" y2="45" stroke="currentColor" stroke-width="2" />
+                </svg>
+                <span class="logo-text">Saji<span>Papua</span></span>
+            </a>
+
+            <ul class="nav-links">
+                <li><a href="index.html" class="nav-link">Beranda</a></li>
+                <li><a href="galeri.html" class="nav-link">Galeri Budaya</a></li>
+                <li><a href="penerjemah.html" class="nav-link active">Penerjemah</a></li>
+                <li><a href="kuis.html" class="nav-link">Game (Kuis)</a></li>
+            </ul>
+
+            <div class="nav-cta">
+                <a href="chatbot.html" class="btn btn-primary">Chatbot</a>
+            </div>
+
+            <button class="menu-btn" aria-label="Toggle Menu" onclick="toggleMenu()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- INTERACTIVE TBO DEMO SECTION -->
+    <section class="demo-section" style="padding-top: 120px; min-height: 85vh;">
+        <div class="container">
+            <div class="features-header">
+                <span class="section-tag">Demo Interaktif TBO</span>
+                <h2 class="section-title">Validasi Struktur Bahasa Tobati</h2>
+                <p class="section-subtitle">Saksikan bagaimana teori otomata (FSA dan PDA) melakukan tokenisasi dan
+                    memverifikasi tata kalimat (grammar) bahasa Tobati secara visual.</p>
+            </div>
+
+            <div class="demo-grid">
+                <!-- PANEL INPUT (KIRI) -->
+                <div class="demo-card-input">
+                    <h3>Panel Masukan</h3>
+                    <p class="sub-title">Pilih contoh kalimat bahasa Tobati di bawah atau ketik kalimat Anda sendiri.</p>
+
+                    <div class="input-group">
+                        <span class="input-label">Contoh Kalimat (Valid):</span>
+                        <div class="sentence-presets">
+                            <button class="preset-tag active" onclick="usePreset('preset-1')">aka kai aibi</button>
+                            <button class="preset-tag" onclick="usePreset('preset-2')">kai aka aibi</button>
+                            <button class="preset-tag" onclick="usePreset('preset-3')">iri ham apri</button>
+                            <button class="preset-tag" onclick="usePreset('preset-4')">ado te ane</button>
+                        </div>
+
+                        <span class="input-label">Contoh Kalimat (Tidak Valid):</span>
+                        <div class="sentence-presets">
+                            <button class="preset-tag invalid-preset" onclick="usePreset('preset-5')">aka aibi kai</button>
+                            <button class="preset-tag invalid-preset" onclick="usePreset('preset-6')">ham apri</button>
+                            <button class="preset-tag invalid-preset" onclick="usePreset('preset-7')">aka kai</button>
+                            <button class="preset-tag invalid-preset" onclick="usePreset('preset-8')">iri kai ane</button>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="sentence-input" class="input-label">Masukan Kalimat Anda:</label>
+                        <div class="custom-input-wrapper">
+                            <input type="text" id="sentence-input" class="sentence-input" value="aka kai aibi"
+                                placeholder="Ketik kalimat di sini...">
+                        </div>
+                    </div>
+
+                    <div class="demo-controls">
+                        <div class="speed-control">
+                            <span class="speed-label">Kecepatan:</span>
+                            <select id="speed-select" class="speed-select" aria-label="Kecepatan Simulasi">
+                                <option value="800">Cepat (800ms)</option>
+                                <option value="1500" selected>Sedang (1500ms)</option>
+                                <option value="3000">Lambat (3000ms)</option>
+                            </select>
+                        </div>
+
+                        <button id="btn-validate" class="btn btn-primary" onclick="startValidation()">Mulai Validasi</button>
+                    </div>
+
+                    <!-- Validation Result Panel -->
+                    <div class="validation-result-panel" id="validation-result">
+                        <div class="result-badge" id="result-icon">
+                            <!-- SVG Status Icon -->
+                        </div>
+                        <div class="result-details">
+                            <div class="result-title" id="result-title">Valid secara Otomata</div>
+                            <div class="result-desc" id="result-desc">
+                                Arti: <span>"Saya menangkap ikan"</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PANEL VISUALISASI (KANAN) -->
+                <div class="demo-card-visualizer">
+                    <div class="visualizer-tabs">
+                        <button class="tab-btn active" id="fsa-tab-btn" onclick="switchTab('fsa-tab')">FSA (Finite State Automata)</button>
+                        <button class="tab-btn" id="pda-tab-btn" onclick="switchTab('pda-tab')">PDA (Pushdown Automata)</button>
+                    </div>
+
+                    <!-- TAB 1: FSA GRAPH -->
+                    <div class="tab-content active" id="fsa-tab">
+                        <div class="fsa-arena">
+                            <!-- SVG lines will be drawn here -->
+                            <svg class="fsa-svg-overlay" id="fsa-svg-overlay">
+                                <!-- Line paths injected dynamically by JS -->
+                            </svg>
+
+                            <div class="fsa-nodes-container">
+                                <!-- Node q0 (Start) -->
+                                <div class="fsa-node active" id="node-q0"
+                                    style="grid-column: 1; grid-row: 1 / span 2; align-self: center;">
+                                    q₀
+                                    <div class="fsa-node-label">Start</div>
+                                </div>
+                                <!-- Node q1 (After Subject) -->
+                                <div class="fsa-node" id="node-q1" style="grid-column: 2; grid-row: 1;">
+                                    q₁
+                                    <div class="fsa-node-label">Subjek dibaca</div>
+                                </div>
+                                <!-- Node q2 (After Object) -->
+                                <div class="fsa-node" id="node-q2" style="grid-column: 2; grid-row: 2;">
+                                    q₂
+                                    <div class="fsa-node-label">Objek dibaca</div>
+                                </div>
+                                <!-- Node q3 (After S-O) -->
+                                <div class="fsa-node" id="node-q3" style="grid-column: 3; grid-row: 1;">
+                                    q₃
+                                    <div class="fsa-node-label">Subj + Obj</div>
+                                </div>
+                                <!-- Node q4 (After O-S) -->
+                                <div class="fsa-node" id="node-q4" style="grid-column: 3; grid-row: 2;">
+                                    q₄
+                                    <div class="fsa-node-label">Obj + Subj</div>
+                                </div>
+                                <!-- Node q5 (Accepting) -->
+                                <div class="fsa-node accepting" id="node-q5" style="grid-column: 4; grid-row: 1;">
+                                    q₅
+                                    <div class="fsa-node-label">Valid (Selesai)</div>
+                                </div>
+                                <!-- Node q_err (Trap) -->
+                                <div class="fsa-node" id="node-q_err" style="grid-column: 4; grid-row: 2;">
+                                    q_err
+                                    <div class="fsa-node-label">Error (Trap)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: PDA STACK -->
+                    <div class="tab-content" id="pda-tab">
+                        <div class="pda-arena">
+                            <!-- Visual Stack Cup -->
+                            <div class="stack-container" id="stack-container">
+                                <div class="stack-bottom-marker" id="stack-z0">Z₀ (Bottom Marker)</div>
+                            </div>
+
+                            <!-- PDA Grammar Rules -->
+                            <div class="pda-rules">
+                                <div class="pda-rule-title">Aturan Transisi PDA & CFG</div>
+                                <div class="pda-rule-item" id="pda-r1">
+                                    <span>δ(q₀, S, Z₀) → (q₁, S Z₀)</span>
+                                </div>
+                                <div class="pda-rule-item" id="pda-r2">
+                                    <span>δ(q₀, O, Z₀) → (q₂, O Z₀)</span>
+                                </div>
+                                <div class="pda-rule-item" id="pda-r3">
+                                    <span>δ(q₃, V, O) → (q₅, ε) [SOV]</span>
+                                </div>
+                                <div class="pda-rule-item" id="pda-r4">
+                                    <span>δ(q₄, V, S) → (q₅, ε) [OSV]</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CONSOLE LOG OUTPUT -->
+                    <div class="console-box">
+                        <div class="console-title">
+                            Log Proses Jalannya Otomata
+                            <button class="console-clear" onclick="clearConsole()">Clear</button>
+                        </div>
+                        <div class="console-screen" id="console-screen">
+                            <div class="console-line info">[Sistem] Konsol siap. Pilih atau ketik kalimat lalu klik Validasi.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container footer-bottom">
+            <p>&copy; 2026 Saji Papua. Dibuat dengan dedikasi untuk melestarikan bahasa daerah Papua melalui pendekatan <span>Etnik-Digital</span>.</p>
+        </div>
+    </footer>
+
+    <!-- INTERACTION LOGIC -->
+    <script>
+        function toggleMenu() {
+            const navLinks = document.querySelector(".nav-links");
+            navLinks.classList.toggle("mobile-active");
+        }
+        
+        // Sticky Navbar script
+        window.addEventListener("scroll", () => {
+            const navbar = document.querySelector(".navbar");
+            if (window.scrollY > 50) {
+                navbar.classList.add("scrolled");
+            } else {
+                navbar.classList.remove("scrolled");
+            }
+        });
+
+        // Lexicon & Grammar Rules
+        const LEXICON = {
+            subjects: {
+                "aka": { id: "S", indo: "Saya", type: "Subjek" },
+                "iri": { id: "S", indo: "Kamu", type: "Subjek" },
+                "ado": { id: "S", indo: "Dia", type: "Subjek" }
+            },
+            objects: {
+                "kai": { id: "O", indo: "ikan", type: "Objek" },
+                "ham": { id: "O", indo: "sagu", type: "Objek" },
+                "te":  { id: "O", indo: "air", type: "Objek" }
+            },
+            verbs: {
+                "aibi":      { id: "V", indo: "menangkap", type: "Verba" },
+                "apri":      { id: "V", indo: "makan", type: "Verba" },
+                "ane":       { id: "V", indo: "minum", type: "Verba" },
+                "natnahat":  { id: "V", indo: "mengajar", type: "Verba" }
+            }
+        };
+
+        const PRESETS = {
+            "preset-1": "aka kai aibi",
+            "preset-2": "kai aka aibi",
+            "preset-3": "iri ham apri",
+            "preset-4": "ado te ane",
+            "preset-5": "aka aibi kai",
+            "preset-6": "ham apri",
+            "preset-7": "aka kai",
+            "preset-8": "iri kai ane"
+        };
+
+        let isRunning = false;
+        let cancelSimulation = false;
+
+        function switchTab(tabId) {
+            document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+            document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+
+            if (tabId === 'fsa-tab') {
+                document.getElementById("fsa-tab-btn").classList.add("active");
+                document.getElementById("fsa-tab").classList.add("active");
+                setTimeout(drawFSAPaths, 100);
+            } else {
+                document.getElementById("pda-tab-btn").classList.add("active");
+                document.getElementById("pda-tab").classList.add("active");
+            }
+        }
+
+        // Draw FSA Paths
+        const fsaOverlay = document.getElementById("fsa-svg-overlay");
+        
+        function drawFSAPaths() {
+            if (!fsaOverlay) return;
+            fsaOverlay.innerHTML = "";
+            
+            const nodes = {
+                q0: document.getElementById("node-q0"),
+                q1: document.getElementById("node-q1"),
+                q2: document.getElementById("node-q2"),
+                q3: document.getElementById("node-q3"),
+                q4: document.getElementById("node-q4"),
+                q5: document.getElementById("node-q5"),
+                q_err: document.getElementById("node-q_err")
+            };
+            
+            const arenaRect = document.querySelector(".fsa-arena").getBoundingClientRect();
+            
+            const getCenter = (el) => {
+                if (!el) return { x: 0, y: 0 };
+                const rect = el.getBoundingClientRect();
+                return {
+                    x: (rect.left + rect.right) / 2 - arenaRect.left,
+                    y: (rect.top + rect.bottom) / 2 - arenaRect.top
+                };
+            };
+
+            const transitions = [
+                { from: "q0", to: "q1", id: "t-q0-q1", curve: 0 },
+                { from: "q0", to: "q2", id: "t-q0-q2", curve: 0 },
+                { from: "q1", to: "q3", id: "t-q1-q3", curve: 0 },
+                { from: "q2", to: "q4", id: "t-q2-q4", curve: 0 },
+                { from: "q3", to: "q5", id: "t-q3-q5", curve: 0 },
+                { from: "q4", to: "q5", id: "t-q4-q5", curve: 0 },
+                { from: "q0", to: "q_err", id: "t-q0-err", curve: -20 },
+                { from: "q1", to: "q_err", id: "t-q1-err", curve: -15 },
+                { from: "q2", to: "q_err", id: "t-q2-err", curve: -15 },
+                { from: "q3", to: "q_err", id: "t-q3-err", curve: -15 },
+                { from: "q4", to: "q_err", id: "t-q4-err", curve: -15 },
+                { from: "q5", to: "q_err", id: "t-q5-err", curve: 15 }
+            ];
+
+            transitions.forEach(trans => {
+                const start = getCenter(nodes[trans.from]);
+                const end = getCenter(nodes[trans.to]);
+                
+                if (start.x === 0 || end.x === 0) return;
+
+                let d = "";
+                if (trans.curve === 0) {
+                    d = `M ${start.x} ${start.y} L ${end.x} ${end.y}`;
+                } else {
+                    const midX = (start.x + end.x) / 2;
+                    const midY = (start.y + end.y) / 2 + trans.curve;
+                    d = `M ${start.x} ${start.y} Q ${midX} ${midY} ${end.x} ${end.y}`;
+                }
+
+                const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                path.setAttribute("d", d);
+                path.setAttribute("id", trans.id);
+                fsaOverlay.appendChild(path);
+                path.setAttribute("marker-end", "url(#arrow)");
+            });
+        }
+
+        function initSVGArrowMarker() {
+            const svg = document.getElementById("fsa-svg-overlay");
+            if (!svg) return;
+            const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+            const marker = document.createElementNS("http://www.w3.org/2000/svg", "marker");
+            marker.setAttribute("id", "arrow");
+            marker.setAttribute("viewBox", "0 0 10 10");
+            marker.setAttribute("refX", "22");
+            marker.setAttribute("refY", "5");
+            marker.setAttribute("markerWidth", "6");
+            marker.setAttribute("markerHeight", "6");
+            marker.setAttribute("orient", "auto-start-reverse");
+            
+            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            path.setAttribute("d", "M 0 0 L 10 5 L 0 10 z");
+            path.setAttribute("fill", "rgba(0,0,0,0.2)");
+            path.setAttribute("id", "arrow-path");
+            
+            marker.appendChild(path);
+            defs.appendChild(marker);
+            svg.appendChild(defs);
+        }
+
+        // Initialize SVG
+        initSVGArrowMarker();
+        window.addEventListener("resize", drawFSAPaths);
+        setTimeout(drawFSAPaths, 200);
+
+        // Simulator Interaction Logic
+        const sentenceInput = document.getElementById("sentence-input");
+        const btnValidate = document.getElementById("btn-validate");
+        const consoleScreen = document.getElementById("console-screen");
+        const stackContainer = document.getElementById("stack-container");
+        const validationResult = document.getElementById("validation-result");
+        const resultTitle = document.getElementById("result-title");
+        const resultDesc = document.getElementById("result-desc");
+        const resultIcon = document.getElementById("result-icon");
+
+        const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+        function logToConsole(message, type = "info") {
+            const line = document.createElement("div");
+            line.className = `console-line ${type}`;
+            line.innerText = `[${new Date().toLocaleTimeString()}] ${message}`;
+            consoleScreen.appendChild(line);
+            consoleScreen.scrollTop = consoleScreen.scrollHeight;
+        }
+
+        function clearConsole() {
+            consoleScreen.innerHTML = '<div class="console-line info">[Sistem] Konsol siap. Pilih atau ketik kalimat lalu klik Validasi.</div>';
+        }
+
+        function usePreset(presetId) {
+            if (isRunning) return;
+            // Set active tags visual
+            document.querySelectorAll(".preset-tag").forEach(t => t.classList.remove("active"));
+            
+            // Search buttons for clicking element
+            const clickedBtn = Array.from(document.querySelectorAll(".preset-tag")).find(btn => btn.getAttribute("onclick").includes(presetId));
+            if (clickedBtn) clickedBtn.classList.add("active");
+
+            sentenceInput.value = PRESETS[presetId];
+            logToConsole(`Preset terpilih: "${PRESETS[presetId]}"`, "info");
+            resetVisuals();
+        }
+
+        function resetVisuals() {
+            document.querySelectorAll(".fsa-node").forEach(node => {
+                node.classList.remove("active", "error-state");
+            });
+            document.getElementById("node-q0").classList.add("active");
+
+            document.querySelectorAll("#fsa-svg-overlay path").forEach(path => {
+                path.className.baseVal = "";
+            });
+
+            stackContainer.innerHTML = '<div class="stack-bottom-marker" id="stack-z0">Z₀ (Bottom Marker)</div>';
+            document.querySelectorAll(".pda-rule-item").forEach(rule => rule.classList.remove("active"));
+            validationResult.className = "validation-result-panel";
+        }
+
+        function pushToStack(symbol, label) {
+            const item = document.createElement("div");
+            item.className = "stack-item";
+            item.innerHTML = `
+                <span class="stack-item-symbol">${symbol}</span>
+                <span class="stack-item-desc">${label}</span>
+            `;
+            stackContainer.insertBefore(item, stackContainer.firstChild);
+        }
+
+        async function popFromStack() {
+            const topItem = stackContainer.firstChild;
+            if (topItem && topItem.id !== "stack-z0") {
+                topItem.classList.add("popping");
+                await sleep(300);
+                stackContainer.removeChild(topItem);
+                return true;
+            }
+            return false;
+        }
+
+        async function startValidation() {
+            if (isRunning) {
+                cancelSimulation = true;
+                btnValidate.innerText = "Mulai Validasi";
+                btnValidate.style.background = "";
+                isRunning = false;
+                logToConsole("Simulasi dibatalkan oleh pengguna.", "warn");
+                return;
+            }
+
+            const rawText = sentenceInput.value.trim();
+            if (!rawText) {
+                logToConsole("Input kosong! Masukkan kalimat untuk divalidasi.", "warn");
+                return;
+            }
+
+            isRunning = true;
+            cancelSimulation = false;
+            btnValidate.innerText = "Batalkan";
+            btnValidate.style.background = "var(--highlight-red)";
+            
+            resetVisuals();
+            logToConsole(`Memulai tokenisasi dan validasi kalimat: "${rawText}"`, "info");
+
+            const speed = parseInt(document.getElementById("speed-select").value);
+            const tokens = rawText.toLowerCase().split(/\s+/);
+            logToConsole(`Token ditemukan (${tokens.length}): [ ${tokens.join(", ")} ]`, "info");
+
+            let currentState = "q0";
+            let stack = ["Z0"];
+            
+            let subjekWord = "";
+            let objekWord = "";
+            let verbaWord = "";
+            let isGrammarValid = true;
+
+            await sleep(speed);
+
+            for (let i = 0; i < tokens.length; i++) {
+                if (cancelSimulation) break;
+
+                const token = tokens[i];
+                logToConsole(`--------------------------------------`, "info");
+                logToConsole(`Memproses token ke-${i+1}: "${token}"`, "info");
+
+                let tokenType = null;
+                let wordInfo = null;
+
+                if (LEXICON.subjects[token]) {
+                    tokenType = "S";
+                    wordInfo = LEXICON.subjects[token];
+                    subjekWord = token;
+                } else if (LEXICON.objects[token]) {
+                    tokenType = "O";
+                    wordInfo = LEXICON.objects[token];
+                    objekWord = token;
+                } else if (LEXICON.verbs[token]) {
+                    tokenType = "V";
+                    wordInfo = LEXICON.verbs[token];
+                    verbaWord = token;
+                }
+
+                if (tokenType) {
+                    logToConsole(`Token "${token}" terdeteksi sebagai ${wordInfo.type.toUpperCase()} (${tokenType})`, "info");
+                } else {
+                    logToConsole(`Token "${token}" tidak dikenali dalam kamus bahasa Tobati!`, "error");
+                    isGrammarValid = false;
+                }
+
+                // FSA logic
+                const previousState = currentState;
+                let pathId = "";
+                let transitionLabel = "";
+
+                if (isGrammarValid) {
+                    if (currentState === "q0") {
+                        if (tokenType === "S") {
+                            currentState = "q1";
+                            pathId = "t-q0-q1";
+                            transitionLabel = "Membaca Subjek";
+                        } else if (tokenType === "O") {
+                            currentState = "q2";
+                            pathId = "t-q0-q2";
+                            transitionLabel = "Membaca Objek";
+                        } else {
+                            currentState = "q_err";
+                            pathId = "t-q0-err";
+                            isGrammarValid = false;
+                            transitionLabel = "Membaca Verba di awal (Pola tidak valid)";
+                        }
+                    } else if (currentState === "q1") {
+                        if (tokenType === "O") {
+                            currentState = "q3";
+                            pathId = "t-q1-q3";
+                            transitionLabel = "Membaca Objek setelah Subjek";
+                        } else {
+                            currentState = "q_err";
+                            pathId = "t-q1-err";
+                            isGrammarValid = false;
+                            transitionLabel = "Pola salah (Harus Objek setelah Subjek)";
+                        }
+                    } else if (currentState === "q2") {
+                        if (tokenType === "S") {
+                            currentState = "q4";
+                            pathId = "t-q2-q4";
+                            transitionLabel = "Membaca Subjek setelah Objek";
+                        } else {
+                            currentState = "q_err";
+                            pathId = "t-q2-err";
+                            isGrammarValid = false;
+                            transitionLabel = "Pola salah (Harus Subjek setelah Objek)";
+                        }
+                    } else if (currentState === "q3") {
+                        if (tokenType === "V") {
+                            currentState = "q5";
+                            pathId = "t-q3-q5";
+                            transitionLabel = "Membaca Verba (SOV)";
+                        } else {
+                            currentState = "q_err";
+                            pathId = "t-q3-err";
+                            isGrammarValid = false;
+                            transitionLabel = "Pola salah (Harus Verba di akhir)";
+                        }
+                    } else if (currentState === "q4") {
+                        if (tokenType === "V") {
+                            currentState = "q5";
+                            pathId = "t-q4-q5";
+                            transitionLabel = "Membaca Verba (OSV)";
+                        } else {
+                            currentState = "q_err";
+                            pathId = "t-q4-err";
+                            isGrammarValid = false;
+                            transitionLabel = "Pola salah (Harus Verba di akhir)";
+                        }
+                    } else if (currentState === "q5") {
+                        currentState = "q_err";
+                        pathId = "t-q5-err";
+                        isGrammarValid = false;
+                        transitionLabel = "Token berlebih setelah kalimat selesai";
+                    }
+                } else {
+                    currentState = "q_err";
+                }
+
+                // Update visual node active
+                document.querySelectorAll(".fsa-node").forEach(node => node.classList.remove("active"));
+                const activeNode = document.getElementById(`node-${currentState}`);
+                if (activeNode) {
+                    if (currentState === "q_err") {
+                        activeNode.classList.add("error-state");
+                    } else {
+                        activeNode.classList.add("active");
+                    }
+                }
+
+                // Path active visual glow
+                if (pathId) {
+                    const pathEl = document.getElementById(pathId);
+                    if (pathEl) {
+                        pathEl.className.baseVal = (currentState === "q_err" ? "error" : "active");
+                    }
+                }
+
+                logToConsole(`FSA: Transisi ${previousState.toUpperCase()} -> ${currentState.toUpperCase()} (${transitionLabel})`, isGrammarValid ? "warn" : "error");
+
+                // PDA logic
+                if (isGrammarValid) {
+                    document.querySelectorAll(".pda-rule-item").forEach(r => r.classList.remove("active"));
+
+                    if (tokenType === "S") {
+                        stack.push("S");
+                        pushToStack("S", "Subjek");
+                        document.getElementById("pda-r1").classList.add("active");
+                        logToConsole(`PDA: Push 'S' ke dalam Stack. Stack: [${stack.join(", ")}]`, "success");
+                    } else if (tokenType === "O") {
+                        stack.push("O");
+                        pushToStack("O", "Objek");
+                        document.getElementById("pda-r2").classList.add("active");
+                        logToConsole(`PDA: Push 'O' ke dalam Stack. Stack: [${stack.join(", ")}]`, "success");
+                    } else if (tokenType === "V") {
+                        logToConsole("PDA: Membaca Verba -> Memulai proses reduksi tata bahasa (Pop)", "info");
+                        if (currentState === "q5" && previousState === "q3") {
+                            // SOV
+                            document.getElementById("pda-r3").classList.add("active");
+                            await sleep(speed / 2);
+                            if (await popFromStack()) {
+                                stack.pop();
+                                logToConsole("PDA: Pop 'O' (Objek) dari stack.", "success");
+                            }
+                            await sleep(speed / 2);
+                            if (await popFromStack()) {
+                                stack.pop();
+                                logToConsole("PDA: Pop 'S' (Subjek) dari stack.", "success");
+                            }
+                        } else if (currentState === "q5" && previousState === "q4") {
+                            // OSV
+                            document.getElementById("pda-r4").classList.add("active");
+                            await sleep(speed / 2);
+                            if (await popFromStack()) {
+                                stack.pop();
+                                logToConsole("PDA: Pop 'S' (Subjek) dari stack.", "success");
+                            }
+                            await sleep(speed / 2);
+                            if (await popFromStack()) {
+                                stack.pop();
+                                logToConsole("PDA: Pop 'O' (Objek) dari stack.", "success");
+                            }
+                        }
+                    }
+                } else {
+                    document.querySelectorAll(".pda-rule-item").forEach(r => r.classList.remove("active"));
+                    logToConsole("PDA: Pelanggaran tata bahasa! Stack dibekukan.", "error");
+                }
+
+                await sleep(speed);
+            }
+
+            if (!cancelSimulation) {
+                logToConsole("======================================", "info");
+                logToConsole("Analisis selesai. Mengevaluasi status akhir...", "info");
+
+                const isFinalAccepting = (currentState === "q5");
+                const isStackClean = (stack.length === 1 && stack[0] === "Z0");
+
+                if (isGrammarValid && isFinalAccepting && isStackClean) {
+                    logToConsole("KALIMAT VALID! Kalimat berhasil diterjemahkan dan diverifikasi.", "success");
+                    
+                    validationResult.className = "validation-result-panel success";
+                    resultTitle.innerText = "Valid secara Otomata";
+
+                    const subIndo = LEXICON.subjects[subjekWord].indo;
+                    const objIndo = LEXICON.objects[objekWord].indo;
+                    const verbIndo = LEXICON.verbs[verbaWord].indo;
+                    const pattern = (subjekWord === tokens[0]) ? "SOV" : "OSV";
+
+                    resultDesc.innerHTML = `Struktur teridentifikasi pola <strong>${pattern}</strong>.<br>Arti: <span>"${subIndo} ${verbIndo} ${objIndo}"</span>`;
+                    resultIcon.innerHTML = `<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>`;
+                } else {
+                    logToConsole("KALIMAT TIDAK VALID! Kalimat ditolak.", "error");
+                    
+                    validationResult.className = "validation-result-panel error";
+                    resultTitle.innerText = "Struktur Tidak Valid";
+
+                    let suggestion = "Gunakan pola bahasa Tobati: Subjek-Objek-Verba (SOV) atau Objek-Subjek-Verba (OSV).";
+                    if (tokens.length < 3) {
+                        suggestion = "Kalimat tidak lengkap. Minimal membutuhkan 3 kata (Subjek, Objek, dan Verba).";
+                    } else if (currentState === "q_err" || !isGrammarValid) {
+                        const hasS = tokens.some(t => LEXICON.subjects[t]);
+                        const hasO = tokens.some(t => LEXICON.objects[t]);
+                        const hasV = tokens.some(t => LEXICON.verbs[t]);
+
+                        if (!hasS) suggestion = "Kalimat Anda kehilangan <strong>Subjek</strong>.";
+                        else if (!hasO) suggestion = "Kalimat Anda kehilangan <strong>Objek</strong>.";
+                        else if (!hasV) suggestion = "Kalimat Anda kehilangan <strong>Verba/Kata Kerja</strong>.";
+                        else {
+                            suggestion = "Struktur kata tidak teratur. Pastikan kata kerja berada di akhir kalimat.";
+                        }
+                    }
+
+                    resultDesc.innerHTML = suggestion;
+                    resultIcon.innerHTML = `<svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>`;
+                }
+            }
+
+            btnValidate.innerText = "Mulai Validasi";
+            btnValidate.style.background = "";
+            isRunning = false;
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saji Papua: Pelestarian Budaya Etnik-Digital</title>
+    <meta name="description"
+        content="Portal digital pelestarian warisan luhur budaya Papua suku Dani, Asmat, dan Tobati menggunakan teknologi otomata modern.">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <!-- NAVIGASI BAR -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo-section">
+                <!-- SVG Icon Logo Etnik-Digital -->
+                <svg class="logo-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="4"
+                        stroke-dasharray="10 6" />
+                    <path d="M50 15 L80 45 L50 75 L20 45 Z" fill="none" stroke="currentColor" stroke-width="3" />
+                    <circle cx="50" cy="45" r="8" fill="var(--highlight-red)" />
+                    <line x1="50" y1="15" x2="50" y2="75" stroke="currentColor" stroke-width="2" />
+                    <line x1="20" y1="45" x2="80" y2="45" stroke="currentColor" stroke-width="2" />
+                </svg>
+                <span class="logo-text">Saji<span>Papua</span></span>
+            </a>
+
+            <ul class="nav-links">
+                <li><a href="index.html" class="nav-link active">Beranda</a></li>
+                <li><a href="galeri.html" class="nav-link">Galeri Budaya</a></li>
+                <li><a href="penerjemah.html" class="nav-link">Penerjemah</a></li>
+                <li><a href="kuis.html" class="nav-link">Game (Kuis)</a></li>
+            </ul>
+
+            <div class="nav-cta">
+                <a href="chatbot.html" class="btn btn-primary">Chatbot</a>
+            </div>
+
+            <button class="menu-btn" aria-label="Toggle Menu" onclick="toggleMenu()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <header class="hero">
+        <div class="container hero-grid">
+            <div class="hero-content">
+                <div class="hero-tagline">
+                    <svg viewBox="0 0 24 24">
+                        <path
+                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z" />
+                    </svg>
+                    Preservasi Etnik-Digital 2026
+                </div>
+                <h1 class="hero-title">Saji Papua: Menjaga Denyut Nadi Tradisi di Era Digital</h1>
+                <p class="hero-subtitle">Eksplorasi warisan budaya agung tanah Papua melalui sentuhan etnik-digital yang
+                    presisi. Menghubungkan tradisi luhur suku Dani, Asmat, Amungme, Kamoro, Biak, dan Sentani dengan komputasi masa depan.</p>
+                <div class="hero-ctas">
+                    <a href="galeri.html" class="btn btn-primary">Jelajahi Papua</a>
+                    <a href="penerjemah.html" class="btn btn-secondary">Coba Fitur Penerjemah</a>
+                </div>
+            </div>
+
+            <div class="hero-visual">
+                <div class="visual-backdrop"></div>
+                <!-- Etnik-Digital Asmat Shield SVG -->
+                <svg class="visual-art" viewBox="0 0 400 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Shield Base -->
+                    <path d="M200 40 C320 120, 320 320, 200 460 C80 320, 80 120, 200 40 Z" fill="#ffffff"
+                        stroke="var(--accent-gold)" stroke-width="4" />
+                    <!-- Inner Shield Decor -->
+                    <path d="M200 70 C290 140, 290 300, 200 420 C110 300, 110 140, 200 70 Z" fill="#faf8f5"
+                        stroke="var(--highlight-red)" stroke-width="2" />
+
+                    <!-- Center Carving Motif (Etnik-Digital) -->
+                    <line x1="200" y1="70" x2="200" y2="420" stroke="var(--accent-gold)" stroke-width="2"
+                        stroke-dasharray="6 4" />
+
+                    <!-- Digital Nodes & Circles (Asmat Face Representation) -->
+                    <circle cx="200" cy="180" r="28" fill="none" stroke="var(--accent-gold)" stroke-width="2" />
+                    <circle cx="200" cy="180" r="14" fill="var(--highlight-red)" />
+
+                    <!-- Left and Right Digital Wings (Asmat Wave) -->
+                    <path d="M200 220 Q270 240 270 200" stroke="var(--accent-gold)" stroke-width="3" />
+                    <path d="M200 220 Q130 240 130 200" stroke="var(--accent-gold)" stroke-width="3" />
+                    <circle cx="270" cy="200" r="6" fill="var(--accent-gold)" />
+                    <circle cx="130" cy="200" r="6" fill="var(--accent-gold)" />
+
+                    <!-- Lower Mask Carving -->
+                    <path d="M200 280 Q290 310 200 370 Q110 310 200 280 Z" fill="none" stroke="var(--accent-gold)"
+                        stroke-width="2" />
+                    <path d="M200 300 Q260 320 200 350 Q140 320 200 300 Z" fill="none" stroke="var(--highlight-red)"
+                        stroke-width="1.5" />
+                    <circle cx="200" cy="325" r="8" fill="var(--accent-gold)" />
+
+                    <!-- Digital Lines Overlay -->
+                    <line x1="50" y1="250" x2="100" y2="250" stroke="var(--accent-gold)" stroke-width="1.5"
+                        stroke-dasharray="4 4" />
+                    <circle cx="50" cy="250" r="4" fill="var(--accent-gold)" />
+                    <line x1="350" y1="250" x2="300" y2="250" stroke="var(--accent-gold)" stroke-width="1.5"
+                        stroke-dasharray="4 4" />
+                    <circle cx="350" cy="250" r="4" fill="var(--accent-gold)" />
+                </svg>
+            </div>
+        </div>
+    </header>
+
+    <!-- IMPACT / STATISTICS SECTION -->
+    <section class="statistics" id="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">250+</div>
+                    <div class="stat-label">Suku Adat</div>
+                    <div class="stat-desc">Keragaman adat istiadat luhur yang hidup berdampingan.</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number highlight">300+</div>
+                    <div class="stat-label">Bahasa Daerah</div>
+                    <div class="stat-desc">Kekayaan linguistik unik yang dilindungi secara formal.</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">1</div>
+                    <div class="stat-label">Portal Otomata</div>
+                    <div class="stat-desc">Aplikasi pelestarian struktural bahasa pertama di Indonesia.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div class="footer-about">
+                <a href="index.html" class="logo-section">
+                    <svg class="logo-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="4"
+                            stroke-dasharray="10 6" />
+                        <path d="M50 15 L80 45 L50 75 L20 45 Z" fill="none" stroke="currentColor" stroke-width="3" />
+                        <circle cx="50" cy="45" r="8" fill="var(--highlight-red)" />
+                        <line x1="50" y1="15" x2="50" y2="75" stroke="currentColor" stroke-width="2" />
+                        <line x1="20" y1="45" x2="80" y2="45" stroke="currentColor" stroke-width="2" />
+                    </svg>
+                    <span class="logo-text">Saji<span>Papua</span></span>
+                </a>
+                <p>Upaya inovasi pelestarian kebudayaan dan kekayaan linguistik suku-suku di Papua melalui pemodelan
+                    komputasi otomata digital.</p>
+            </div>
+
+            <div class="footer-links-col">
+                <h4>Navigasi</h4>
+                <ul class="footer-links">
+                    <li><a href="index.html">Beranda</a></li>
+                    <li><a href="galeri.html">Galeri Budaya</a></li>
+                    <li><a href="penerjemah.html">Penerjemah</a></li>
+                    <li><a href="kuis.html">Game (Kuis)</a></li>
+                    <li><a href="chatbot.html">Chatbot</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-links-col">
+                <div class="footer-quote">
+                    <p>"Pelestarian budaya bukan tentang menolak modernitas, melainkan memeluk masa depan tanpa
+                        kehilangan akar sejarah kita."</p>
+                    <span>— Warisan Luhur Papua</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="container">
+                <p>&copy; 2026 Saji Papua. Dibuat dengan dedikasi untuk melestarikan bahasa daerah Papua melalui
+                    pendekatan <span>Etnik-Digital</span>.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- NAVBAR INTERACTION SCRIPT -->
+    <script>
+        function toggleMenu() {
+            const navLinks = document.querySelector(".nav-links");
+            navLinks.classList.toggle("mobile-active");
+        }
+        
+        // Sticky Navbar script
+        window.addEventListener("scroll", () => {
+            const navbar = document.querySelector(".navbar");
+            if (window.scrollY > 50) {
+                navbar.classList.add("scrolled");
+            } else {
+                navbar.classList.remove("scrolled");
+            }
+        });
+    </script>
+</body>
+
+</html>
